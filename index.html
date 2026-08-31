@@ -206,6 +206,46 @@
     .note-category { display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px; background:rgba(24,24,24,.06); color:#5f5a54; font-size:11px; font-weight:700; }
     .statline { display:flex; gap:12px; flex-wrap:wrap; color:var(--muted); font-size:12px; margin-top:8px; }
     .statline strong { color:var(--text); }
+    .back-link {
+      border:0; background:transparent; color:var(--muted); padding:6px 0; font-size:13px; font-weight:700;
+    }
+    .timeline-jump {
+      position:sticky; top:calc(58px + env(safe-area-inset-top)); z-index:9; margin:0 -16px 8px; padding:8px 16px 12px;
+      background:linear-gradient(to bottom, var(--bg) 78%, transparent);
+    }
+    .timeline-list { position:relative; padding-left:16px; }
+    .timeline-list::before {
+      content:""; position:absolute; left:5px; top:8px; bottom:8px; width:1px; background:rgba(24,24,24,.13);
+    }
+    .timeline-block { position:relative; padding:0 0 18px 10px; scroll-margin-top:135px; }
+    .timeline-block::before {
+      content:""; position:absolute; left:-15px; top:7px; width:9px; height:9px; border-radius:50%; background:var(--accent);
+      box-shadow:0 0 0 4px var(--bg);
+    }
+    .timeline-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:8px; }
+    .timeline-year { font-size:20px; font-weight:800; letter-spacing:-.03em; }
+    .timeline-ages { color:var(--muted); font-size:12px; text-align:right; white-space:nowrap; }
+    .timeline-events { display:grid; gap:7px; }
+    .timeline-event { font-size:14px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .timeline-event::before { content:"•"; margin-right:7px; color:var(--muted); }
+    .timeline-world-toggle {
+      margin-top:9px; border:0; background:rgba(24,24,24,.055); color:var(--muted); border-radius:10px;
+      padding:7px 10px; font-size:12px; font-weight:700;
+    }
+    .timeline-world { display:none; margin-top:10px; padding:12px; border-radius:14px; background:rgba(255,255,255,.6); border:1px solid var(--line); }
+    .timeline-world.open { display:block; }
+    .timeline-world h3 { margin:0 0 7px; font-size:11px; color:var(--muted); letter-spacing:.08em; }
+    .timeline-world h3:not(:first-child) { margin-top:13px; }
+    .script-list { display:grid; gap:10px; }
+    .script-row {
+      width:100%; border:1px solid var(--line); background:var(--card); border-radius:18px; padding:16px; text-align:left; color:var(--text);
+      box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .script-row strong { font-size:15px; line-height:1.35; }
+    .script-row span { color:var(--muted); font-size:16px; }
+    .script-text {
+      white-space:pre-wrap; overflow-wrap:anywhere; font-size:14px; line-height:1.62; padding:16px 2px 40px;
+    }
     @media (min-width: 721px) {
       .fab { right: calc((100vw - 720px)/2 + 22px); }
     }
@@ -314,13 +354,57 @@
         <div class="sub">자주 쓰지는 않지만 필요할 때 찾는 기능.</div>
       </div>
       <div class="hub-list">
+        <button class="hub-btn" data-open-view="timeline"><strong>연표</strong><span>연도별 사건과 세계관 정보</span></button>
+        <button class="hub-btn" data-open-view="scripts"><strong>스크립트</strong><span>퀘스트별 스크립트 열람</span></button>
+        <button class="hub-btn" data-open-view="links"><strong>링크</strong><span>외부 도구와 바로가기 · 준비 중</span></button>
         <button class="hub-btn" data-open-view="archive"><strong>보관함</strong><span>감상 기록 검색 · 필터 · 관리</span></button>
-        <button class="hub-btn" data-open-view="library"><strong>자료실</strong><span>연표와 자료 아카이브 · 준비 중</span></button>
+        <button class="hub-btn" data-open-view="library"><strong>자료실</strong><span>텍스트 자료 아카이브 · 준비 중</span></button>
       </div>
+    </section>
+
+    <section class="view" id="view-timeline">
+      <div class="hero">
+        <button class="back-link" data-open-view="more">← 더보기</button>
+        <div class="eyebrow">TIMELINE</div>
+        <h1>연표</h1>
+        <div class="sub">주요 사건은 바로 보고, 세계관 사건은 필요할 때 펼칩니다.</div>
+      </div>
+      <div class="timeline-jump"><div class="chips" id="timelineDecades"></div></div>
+      <div id="timelineList"></div>
+    </section>
+
+    <section class="view" id="view-scripts">
+      <div class="hero">
+        <button class="back-link" data-open-view="more">← 더보기</button>
+        <div class="eyebrow">SCRIPTS</div>
+        <h1>스크립트</h1>
+        <div class="sub">퀘스트를 골라 플레인 텍스트로 읽습니다.</div>
+      </div>
+      <div id="scriptList" class="script-list"></div>
+    </section>
+
+    <section class="view" id="view-script-detail">
+      <div class="hero">
+        <button class="back-link" id="backToScripts">← 스크립트</button>
+        <div class="eyebrow">SCRIPT</div>
+        <h1 id="scriptDetailTitle">스크립트</h1>
+      </div>
+      <div class="script-text" id="scriptDetailText"></div>
+    </section>
+
+    <section class="view" id="view-links">
+      <div class="hero">
+        <button class="back-link" data-open-view="more">← 더보기</button>
+        <div class="eyebrow">LINKS</div>
+        <h1>링크</h1>
+        <div class="sub">외부 링크를 정리하기 전까지 비워둡니다.</div>
+      </div>
+      <div class="empty">아직 등록된 링크가 없습니다.</div>
     </section>
 
     <section class="view" id="view-library">
       <div class="hero">
+        <button class="back-link" data-open-view="more">← 더보기</button>
         <div class="eyebrow">LIBRARY</div>
         <h1>자료실</h1>
         <div class="sub">데이터를 연결하기 전까지 비워둡니다.</div>
@@ -399,7 +483,7 @@
     <div class="sheet-head"><h3>설정</h3><button data-close="settingsModal">닫기</button></div>
     <div class="settings-grid">
       <button id="exportBtn"><strong>백업 내보내기</strong><br><span class="small">현재 데이터를 JSON 파일로 저장합니다.</span></button>
-      <button id="importBtn"><strong>JSON 가져오기</strong><br><span class="small">앱 백업, 보관함, 할 거리 데이터를 불러옵니다.</span></button>
+      <button id="importBtn"><strong>JSON 가져오기</strong><br><span class="small">앱 백업, 보관함, 할 거리, 스크립트, 연표 데이터를 불러옵니다.</span></button>
       <button id="seedBtn"><strong>샘플 데이터 다시 넣기</strong><br><span class="small">비어 있을 때 화면 느낌을 확인할 수 있습니다.</span></button>
       <button id="clearBtn" class="danger"><strong>모든 로컬 데이터 지우기</strong><br><span class="small">이 기기의 데이터만 삭제합니다.</span></button>
     </div>
@@ -422,6 +506,8 @@
 
   const starter = {
     notes: [],
+    scripts: [],
+    timeline: [],
     records: [
       { id: crypto.randomUUID(), content:'나중에 다시 읽으면 지금과 전혀 다르게 보일 수도 있는 장면. 일단 지금 느낀 걸 그대로 남겨두기.', tags:['장면'], priority:'', createdAt:new Date(now - 3*day).toISOString() },
       { id: crypto.randomUUID(), content:'대사보다 먼저 이미지가 떠오르는 경우가 있다. 그럴 때는 설명하려고 하지 말고 장면 단위로 먼저 적어두자.', tags:['작업'], priority:'', createdAt:new Date(now - 10*day).toISOString() },
@@ -510,23 +596,50 @@
     if (p.sourceRow != null) out.sourceRow = p.sourceRow;
     return out;
   }
+  function normalizeScriptQuest(q = {}, index = 0) {
+    return {
+      id: String(q.id || `script-${index+1}`),
+      title: String(q.title || '').trim(),
+      order: Number.isFinite(Number(q.order)) ? Number(q.order) : index + 1,
+      content: String(q.content || '')
+    };
+  }
+  function normalizeTimelineItem(item = {}, index = 0) {
+    const events = v => Array.isArray(v) ? v.map(x=>String(x).trim()).filter(Boolean) : [];
+    return {
+      id: String(item.id || `timeline-${index+1}`),
+      year: String(item.year || '').trim(),
+      sortYear: Number(item.sortYear) || 0,
+      ages: {
+        j: String(item.ages?.j ?? '').trim(),
+        k: String(item.ages?.k ?? '').trim(),
+        v: String(item.ages?.v ?? '').trim()
+      },
+      mainEvents: events(item.mainEvents),
+      ncEvents: events(item.ncEvents),
+      worldEvents: events(item.worldEvents),
+      sourceRows: Array.isArray(item.sourceRows) ? item.sourceRows : []
+    };
+  }
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
       if (!raw) {
-        const initial = { notes: [], records: starter.records.map(normalizeRecord), pool: starter.pool.map(normalizePool) };
+        const initial = { notes: [], scripts: [], timeline: [], records: starter.records.map(normalizeRecord), pool: starter.pool.map(normalizePool) };
         localStorage.setItem(KEY, JSON.stringify(initial));
         return initial;
       }
       const parsed = JSON.parse(raw);
       return {
         notes: Array.isArray(parsed.notes) ? parsed.notes.map(normalizeNote) : [],
+        scripts: Array.isArray(parsed.scripts) ? parsed.scripts.map(normalizeScriptQuest).filter(x=>x.title) : [],
+        timeline: Array.isArray(parsed.timeline) ? parsed.timeline.map(normalizeTimelineItem).filter(x=>x.year) : [],
         records: Array.isArray(parsed.records) ? parsed.records.map(normalizeRecord) : [],
         pool: Array.isArray(parsed.pool) ? parsed.pool.map(normalizePool) : []
       };
     } catch (e) {
       console.error(e);
-      return { notes: [], records: starter.records.map(normalizeRecord), pool: starter.pool.map(normalizePool) };
+      return { notes: [], scripts: [], timeline: [], records: starter.records.map(normalizeRecord), pool: starter.pool.map(normalizePool) };
     }
   }
   function save() {
@@ -595,12 +708,14 @@
   }
   function setView(name) {
     $$('.view').forEach(v=>v.classList.toggle('active', v.id === `view-${name}`));
-    const navName = (name==='archive' || name==='library') ? 'more' : name;
+    const navName = ['archive','library','timeline','scripts','script-detail','links'].includes(name) ? 'more' : name;
     $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===navName));
     if (name==='write') setTimeout(()=>$('#writeText').focus(), 40);
     if (name==='archive') { archiveVisibleCount = ARCHIVE_BATCH; renderArchive(); }
     if (name==='notes') renderNotes();
     if (name==='pool') renderPool();
+    if (name==='timeline') renderTimeline();
+    if (name==='scripts') renderScripts();
     window.scrollTo({top:0, behavior:'instant'});
     logEvent('view_' + name);
   }
@@ -762,6 +877,67 @@
       : '<div class="empty">조건에 맞는 기록이 없습니다.</div>';
     bindRecordCards($('#archiveList'));
     $('#archiveMore')?.addEventListener('click',()=>{archiveVisibleCount += ARCHIVE_BATCH; renderArchive();});
+  }
+  function timelineAgeLabel(item) {
+    const parts=[];
+    if(item.ages?.j!=='') parts.push(`J ${esc(item.ages.j)}`);
+    if(item.ages?.k!=='') parts.push(`K ${esc(item.ages.k)}`);
+    if(item.ages?.v!=='') parts.push(`V ${esc(item.ages.v)}`);
+    return parts.join(' · ');
+  }
+  function timelineEventList(items=[]) {
+    return items.map(x=>`<div class="timeline-event">${esc(x)}</div>`).join('');
+  }
+  function renderTimeline() {
+    const items=[...state.timeline].sort((a,b)=>a.sortYear-b.sortYear || a.year.localeCompare(b.year));
+    const decades=[
+      {label:'2000년대 이전', value:'pre2000'},
+      ...[2000,2010,2020,2030,2040,2050,2060,2070].map(x=>({label:String(x),value:String(x)}))
+    ];
+    $('#timelineDecades').innerHTML=decades.map(d=>`<button class="chip" data-decade="${d.value}">${d.label}</button>`).join('');
+    $('#timelineList').innerHTML=items.length?`<div class="timeline-list">${items.map(item=>{
+      const worldCount=(item.ncEvents?.length||0)+(item.worldEvents?.length||0);
+      const main=item.mainEvents?.length?timelineEventList(item.mainEvents):'';
+      const world=worldCount?`<button class="timeline-world-toggle" data-world-toggle="${esc(item.id)}" aria-expanded="false">세계관 ${worldCount}건 ▾</button>
+        <div class="timeline-world" data-world="${esc(item.id)}">
+          ${item.ncEvents?.length?`<h3>NC</h3>${timelineEventList(item.ncEvents)}`:''}
+          ${item.worldEvents?.length?`<h3>WORLD</h3>${timelineEventList(item.worldEvents)}`:''}
+        </div>`:'';
+      return `<section class="timeline-block" id="timeline-${esc(item.id)}" data-sort-year="${item.sortYear}">
+        <div class="timeline-head"><div class="timeline-year">${esc(item.year)}</div><div class="timeline-ages">${timelineAgeLabel(item)}</div></div>
+        <div class="timeline-events">${main}</div>${world}
+      </section>`;
+    }).join('')}</div>`:'<div class="empty">연표 JSON을 가져오면 여기에 표시됩니다.</div>';
+    $$('#timelineDecades [data-decade]').forEach(btn=>btn.onclick=()=>{
+      if(!items.length) return;
+      const value=btn.dataset.decade;
+      let target;
+      if(value==='pre2000') target=items.find(x=>x.sortYear<2000);
+      else { const d=Number(value); target=items.find(x=>x.sortYear>=d && x.sortYear<d+10); }
+      if(!target) return toast('해당 시기의 항목이 없습니다.');
+      document.getElementById(`timeline-${target.id}`)?.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    $$('[data-world-toggle]').forEach(btn=>btn.onclick=()=>{
+      const panel=[...document.querySelectorAll('[data-world]')].find(x=>x.dataset.world===btn.dataset.worldToggle);
+      if(!panel) return;
+      const open=!panel.classList.contains('open');
+      panel.classList.toggle('open',open);
+      btn.textContent=`세계관 ${panel.querySelectorAll('.timeline-event').length}건 ${open?'▴':'▾'}`;
+      btn.setAttribute('aria-expanded',String(open));
+    });
+  }
+  function renderScripts() {
+    const list=[...state.scripts].sort((a,b)=>a.order-b.order || a.title.localeCompare(b.title));
+    $('#scriptList').innerHTML=list.length?list.map(q=>`<button class="script-row" data-script-id="${esc(q.id)}"><strong>${esc(q.title)}</strong><span>›</span></button>`).join(''):'<div class="empty">스크립트 JSON을 가져오면 퀘스트 목록이 표시됩니다.</div>';
+    $$('#scriptList [data-script-id]').forEach(btn=>btn.onclick=()=>openScript(btn.dataset.scriptId));
+  }
+  function openScript(id) {
+    const q=state.scripts.find(x=>x.id===id);
+    if(!q) return;
+    $('#scriptDetailTitle').textContent=q.title;
+    $('#scriptDetailText').textContent=q.content;
+    setView('script-detail');
+    logEvent('open_script');
   }
   function activeNotes() { return state.notes.filter(n=>!n.deletedAt); }
   function noteCategories() {
@@ -945,14 +1121,24 @@
   }
   function closeModal(id){$('#'+id).classList.remove('open');}
   function exportData(){
-    const payload={schemaVersion:5,kind:'app-backup',notes:state.notes,records:state.records,pool:state.pool};
+    const payload={schemaVersion:6,kind:'app-backup',notes:state.notes,scripts:state.scripts,timeline:state.timeline,records:state.records,pool:state.pool};
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`archive-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),500);logEvent('export');
   }
   async function importData(file){
     try{
       const parsed=JSON.parse(await file.text());
       let importedCount=0;
-      if(parsed.kind==='todo-items' && Array.isArray(parsed.items)) {
+      if(parsed.kind==='script-quests' && Array.isArray(parsed.quests)) {
+        const quests=parsed.quests.map(normalizeScriptQuest).filter(x=>x.title && x.content);
+        if(!confirm(`스크립트를 가져온 ${quests.length}개 퀘스트로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`)) return;
+        state.scripts=quests;
+        importedCount=quests.length;
+      } else if(parsed.kind==='timeline-events' && Array.isArray(parsed.items)) {
+        const items=parsed.items.map(normalizeTimelineItem).filter(x=>x.year);
+        if(!confirm(`연표를 가져온 ${items.length}개 항목으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`)) return;
+        state.timeline=items;
+        importedCount=items.length;
+      } else if(parsed.kind==='todo-items' && Array.isArray(parsed.items)) {
         const items=parsed.items.map(normalizePool).filter(x=>x.title.trim());
         if(!confirm(`할 거리를 가져온 ${items.length}개 항목으로 교체할까요?\n보관함 기록은 그대로 유지됩니다.`)) return;
         state.pool=items;
@@ -965,15 +1151,15 @@
           importedCount=records.length;
         } else {
           if(!confirm(`현재 로컬 데이터를 이 백업으로 교체할까요?`)) return;
-          state={notes:Array.isArray(parsed.notes)?parsed.notes.map(normalizeNote):state.notes, records, pool:parsed.pool.map(normalizePool)};
-          importedCount=records.length + state.pool.length;
+          state={notes:Array.isArray(parsed.notes)?parsed.notes.map(normalizeNote):state.notes, scripts:Array.isArray(parsed.scripts)?parsed.scripts.map(normalizeScriptQuest):state.scripts, timeline:Array.isArray(parsed.timeline)?parsed.timeline.map(normalizeTimelineItem):state.timeline, records, pool:parsed.pool.map(normalizePool)};
+          importedCount=records.length + state.pool.length + state.notes.length + state.scripts.length + state.timeline.length;
         }
       } else {
         throw new Error('invalid');
       }
       if (!save()) return;
       feedOrder=shuffle(state.records.map(r=>r.id)); feedCursor=0; archiveVisibleCount=ARCHIVE_BATCH;
-      resetFeed(false); renderArchive(); renderNotes(); renderPool(); closeModal('settingsModal');
+      resetFeed(false); renderArchive(); renderNotes(); renderPool(); renderTimeline(); renderScripts(); closeModal('settingsModal');
       toast(`${importedCount}개를 가져왔습니다.`); logEvent('import');
     }catch(e){console.error(e);toast('지원하는 JSON 파일이 아닙니다.');}
     finally{$('#importFile').value='';}
@@ -981,6 +1167,7 @@
 
   $$('.nav-btn').forEach(b=>b.onclick=()=>setView(b.dataset.view));
   $$('[data-open-view]').forEach(b=>b.onclick=()=>setView(b.dataset.openView));
+  $('#backToScripts').onclick=()=>setView('scripts');
   $('#fab').onclick=()=>{ const active=$('.view.active')?.id; if(active==='view-notes') openNote(); else setView('write'); };
   $$('[data-action="new-record"]').forEach(b=>b.onclick=()=>setView('write'));
   $$('[data-action="pick-pool"]').forEach(b=>b.onclick=()=>setView('pool'));
@@ -1002,7 +1189,7 @@
   $('#settingsBtn').onclick=()=>$('#settingsModal').classList.add('open');
   $('#exportBtn').onclick=exportData; $('#importBtn').onclick=()=>$('#importFile').click(); $('#importFile').onchange=e=>e.target.files[0]&&importData(e.target.files[0]);
   $('#seedBtn').onclick=()=>{if(!confirm('현재 데이터에 샘플을 추가할까요?'))return;state.records.push(...starter.records.map(normalizeRecord));state.pool.push(...starter.pool.map(normalizePool));save();feedOrder=shuffle(state.records.map(r=>r.id));resetFeed(false);renderArchive();renderPool();toast('샘플을 추가했습니다.');};
-  $('#clearBtn').onclick=()=>{if(!confirm('이 기기에 저장된 모든 데이터를 지울까요?'))return;state={notes:[],records:[],pool:[]};clearNoteDraft();save();feedOrder=[];resetFeed(false);renderArchive();renderNotes();renderPool();closeModal('settingsModal');toast('모두 지웠습니다.');};
+  $('#clearBtn').onclick=()=>{if(!confirm('이 기기에 저장된 모든 데이터를 지울까요?'))return;state={notes:[],scripts:[],timeline:[],records:[],pool:[]};clearNoteDraft();save();feedOrder=[];resetFeed(false);renderArchive();renderNotes();renderPool();renderTimeline();renderScripts();closeModal('settingsModal');toast('모두 지웠습니다.');};
   $$('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
   $$('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 
@@ -1012,6 +1199,8 @@
   renderArchive();
   renderNotes();
   renderPool();
+  renderTimeline();
+  renderScripts();
   logEvent('app_open');
 })();
 </script>
