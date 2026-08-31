@@ -31,13 +31,17 @@
     .app { min-height: 100dvh; padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom)); }
     .topbar {
       position: sticky; top: 0; z-index: 20;
-      display: flex; align-items: center; justify-content: space-between;
+      display: grid; align-items: center; gap:8px;
       padding: calc(12px + env(safe-area-inset-top)) 18px 12px;
       background: linear-gradient(to bottom, rgba(245,243,238,.98), rgba(245,243,238,.86), rgba(245,243,238,0));
       backdrop-filter: blur(18px);
     }
-    .brand { font-size: 17px; font-weight: 750; letter-spacing: -.02em; }
-    .top-actions { display: flex; gap: 8px; }
+    .brand { font-size: 18px; font-weight: 750; letter-spacing: -.02em; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .topbar { grid-template-columns: 84px minmax(0,1fr) 84px; }
+    .top-back { width:38px; height:38px; border:0; background:transparent; color:var(--text); font-size:23px; padding:0; }
+    .top-back.hidden { visibility:hidden; pointer-events:none; }
+    .is-hidden { display:none !important; }
+    .top-actions { display: flex; gap: 8px; justify-content:flex-end; justify-self:end; }
     .icon-btn, .ghost-btn, .primary-btn, .chip, .nav-btn {
       border: 0; cursor: pointer;
     }
@@ -52,9 +56,9 @@
     .hero { padding: 16px 4px 14px; }
     .eyebrow { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
     h1 { margin: 6px 0 0; font-size: 30px; line-height: 1.08; letter-spacing: -.04em; }
-    .sub { color: var(--muted); font-size: 14px; margin-top: 8px; line-height: 1.5; }
+    .sub { color: var(--muted); font-size: 15px; margin-top: 8px; line-height: 1.5; }
     .section-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 18px 2px 10px; }
-    .section-head h2 { margin: 0; font-size: 16px; letter-spacing: -.02em; }
+    .section-head h2 { margin: 0; font-size: 17px; letter-spacing: -.02em; }
     .section-head button { background: transparent; color: var(--muted); border: 0; font-size: 13px; }
     .card {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
@@ -63,7 +67,7 @@
     .feed-card { padding: 20px; }
     .card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 11px; color: var(--muted); font-size: 12px; }
     .pill { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 999px; background: rgba(24,24,24,.06); color: #4d4944; font-size: 11px; font-weight: 700; }
-    .card-text { white-space: pre-wrap; font-size: 16px; line-height: 1.62; letter-spacing: -.01em; overflow-wrap: anywhere; }
+    .card-text { white-space: pre-wrap; font-size: 17px; line-height: 1.62; letter-spacing: -.01em; overflow-wrap: anywhere; }
     .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
     .tag { color: #65605a; font-size: 12px; }
     .card-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 14px; }
@@ -93,8 +97,20 @@
       display: block; margin-top: 10px; padding: 4px 0; border: 0; background: transparent;
       color: var(--muted); font-size: 13px; font-weight: 700; text-align: left;
     }
+    .microblog-card { position:relative; }
+    .microblog-card .feed-copy { top:12px; right:12px; }
+    .microblog-thread-content { display:grid; gap:14px; padding-right:34px; }
+    .microblog-thread-content.collapsed { max-height:430px; overflow:hidden; }
+    .microblog-post + .microblog-post { padding-top:13px; border-top:1px solid var(--line); }
+    .microblog-post-text { white-space:pre-wrap; overflow-wrap:anywhere; font-size:17px; line-height:1.62; }
+    .microblog-post-date { margin-top:7px; color:var(--muted); font-size:12px; }
+    .microblog-context { margin-bottom:12px; padding:14px; border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.52); }
+    .microblog-context-label { color:var(--muted); font-size:12px; font-weight:750; margin-bottom:10px; }
+    .microblog-context .microblog-post-text { font-size:15px; }
+    .microblog-context .microblog-post-date { font-size:11px; }
+    .microblog-compose textarea { min-height:240px; font-size:17px; line-height:1.65; }
     .field { margin-bottom: 14px; }
-    label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin: 0 0 7px 2px; }
+    label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin: 0 0 7px 2px; }
     input, textarea, select {
       width: 100%; border: 1px solid var(--line); background: rgba(255,255,255,.9); color: var(--text); border-radius: 16px;
       padding: 13px 14px; outline: none;
@@ -120,13 +136,13 @@
       width:100%; border:1px solid var(--line); background:var(--card); border-radius:18px; padding:17px 16px;
       text-align:left; color:var(--text); box-shadow:var(--shadow);
     }
-    .hub-btn strong { display:block; font-size:16px; margin-bottom:5px; }
-    .hub-btn span { color:var(--muted); font-size:12px; line-height:1.5; }
+    .hub-btn strong { display:block; font-size:17px; margin-bottom:5px; }
+    .hub-btn span { color:var(--muted); font-size:13px; line-height:1.5; }
     .pool-item { display: flex; align-items: flex-start; gap: 12px; }
     .pool-main { flex: 1; }
-    .pool-title { font-size: 15px; line-height: 1.45; }
+    .pool-title { font-size: 16px; line-height: 1.45; }
     .pool-meta { color: var(--muted); font-size: 12px; margin-top: 7px; line-height: 1.45; }
-    .pool-summary { color: #514d48; font-size: 13px; margin-top: 8px; line-height: 1.5; white-space: pre-wrap; }
+    .pool-summary { color: #514d48; font-size: 14px; margin-top: 8px; line-height: 1.5; white-space: pre-wrap; }
     .pool-rel { color: var(--muted); font-size: 11px; margin-top: 7px; line-height: 1.4; }
     .done .pool-title { text-decoration: line-through; color: var(--muted); }
     .check {
@@ -200,7 +216,7 @@
     .note-item:active { transform: scale(.995); }
     .note-preview {
       display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden;
-      white-space: pre-wrap; font-size: 15px; line-height: 1.58; overflow-wrap: anywhere;
+      white-space: pre-wrap; font-size: 16px; line-height: 1.6; overflow-wrap: anywhere;
     }
     .note-meta { color: var(--muted); font-size: 12px; margin-top: 10px; display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
     .note-category { display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px; background:rgba(24,24,24,.06); color:#5f5a54; font-size:11px; font-weight:700; }
@@ -217,34 +233,32 @@
     .timeline-list::before {
       content:""; position:absolute; left:5px; top:8px; bottom:8px; width:1px; background:rgba(24,24,24,.13);
     }
-    .timeline-block { position:relative; padding:0 0 18px 10px; scroll-margin-top:135px; }
-    .timeline-block::before {
-      content:""; position:absolute; left:-15px; top:7px; width:9px; height:9px; border-radius:50%; background:var(--accent);
-      box-shadow:0 0 0 4px var(--bg);
-    }
-    .timeline-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:8px; }
-    .timeline-year { font-size:20px; font-weight:800; letter-spacing:-.03em; }
-    .timeline-ages { color:var(--muted); font-size:12px; text-align:right; white-space:nowrap; }
-    .timeline-events { display:grid; gap:7px; }
-    .timeline-event { font-size:14px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .timeline-block { position:relative; margin:0 0 14px 10px; padding:15px 15px 16px; scroll-margin-top:150px; border-radius:18px; border:1px solid var(--line); background:var(--card); box-shadow:var(--shadow); }
+    .timeline-block::before { content:""; position:absolute; left:-20px; top:21px; width:9px; height:9px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px var(--bg); }
+    .timeline-block.secondary-only { background:rgba(255,255,255,.42); box-shadow:none; border-color:rgba(24,24,24,.07); }
+    .timeline-block.secondary-only::before { background:#aaa49d; }
+    .timeline-block.secondary-only .timeline-year { font-size:18px; color:#625e58; }
+    .timeline-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:10px; }
+    .timeline-year { font-size:21px; font-weight:800; letter-spacing:-.03em; }
+    .timeline-ages { color:var(--muted); font-size:13px; text-align:right; white-space:nowrap; }
+    .timeline-group + .timeline-group { margin-top:13px; padding-top:12px; border-top:1px solid var(--line); }
+    .timeline-group-title { margin:0 0 7px; color:var(--muted); font-size:11px; font-weight:800; letter-spacing:.06em; }
+    .timeline-events { display:grid; gap:8px; }
+    .timeline-event { font-size:16px; line-height:1.58; white-space:pre-wrap; overflow-wrap:anywhere; }
     .timeline-event::before { content:"•"; margin-right:7px; color:var(--muted); }
-    .timeline-world-toggle {
-      margin-top:9px; border:0; background:rgba(24,24,24,.055); color:var(--muted); border-radius:10px;
-      padding:7px 10px; font-size:12px; font-weight:700;
-    }
-    .timeline-world { display:none; margin-top:10px; padding:12px; border-radius:14px; background:rgba(255,255,255,.6); border:1px solid var(--line); }
-    .timeline-world.open { display:block; }
-    .timeline-world h3 { margin:0 0 7px; font-size:11px; color:var(--muted); letter-spacing:.08em; }
-    .timeline-world h3:not(:first-child) { margin-top:13px; }
+    .timeline-controls { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+    .timeline-lang { display:flex; gap:6px; flex:0 0 auto; }
+    .timeline-lang button { border:1px solid var(--line); background:rgba(255,255,255,.72); color:var(--muted); border-radius:999px; padding:7px 10px; font-size:12px; font-weight:700; }
+    .timeline-lang button.active { background:var(--accent); color:white; border-color:var(--accent); }
     .script-list { display:grid; gap:10px; }
     .script-row {
       width:100%; border:1px solid var(--line); background:var(--card); border-radius:18px; padding:16px; text-align:left; color:var(--text);
       box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; gap:10px;
     }
-    .script-row strong { font-size:15px; line-height:1.35; }
+    .script-row strong { font-size:17px; line-height:1.35; }
     .script-row span { color:var(--muted); font-size:16px; }
     .script-text {
-      white-space:pre-wrap; overflow-wrap:anywhere; font-size:14px; line-height:1.62; padding:16px 2px 40px;
+      white-space:pre-wrap; overflow-wrap:anywhere; font-size:18px; line-height:1.72; padding:16px 2px 40px;
     }
     @media (min-width: 721px) {
       .fab { right: calc((100vw - 720px)/2 + 22px); }
@@ -254,7 +268,8 @@
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand">Archive</div>
+    <button class="top-back hidden" id="backTop" aria-label="뒤로가기">‹</button>
+    <div class="brand" id="pageTitle">피드</div>
     <div class="top-actions">
       <button class="icon-btn" id="shuffleTop" aria-label="피드 섞기">↻</button>
       <button class="icon-btn" id="settingsBtn" aria-label="설정">⋯</button>
@@ -264,7 +279,6 @@
   <main>
     <section class="view active" id="view-feed">
       <div class="quick-strip">
-        <button class="quick-card" data-action="new-record"><strong>＋ 바로 쓰기</strong></button>
         <button class="quick-card" data-action="pick-pool"><strong>◌ 뭐 하지?</strong></button>
       </div>
       <div id="feedList"></div>
@@ -272,20 +286,16 @@
 
     <section class="view" id="view-write">
       <div class="hero">
-        <div class="eyebrow">WRITE</div>
-        <h1>바로 쓰기</h1>
-        <div class="sub">제목 없이 본문만 적어도 됩니다.</div>
+        <div class="eyebrow">MICROBLOG</div>
+        <h1 id="microComposerHeading">새 글</h1>
+        <div class="sub">피드에 짧게 남깁니다.</div>
       </div>
-      <div class="card">
+      <div id="microThreadContext"></div>
+      <div class="card microblog-compose">
         <div class="field">
-          <label for="writeText">내용</label>
-          <textarea id="writeText" placeholder="생각난 걸 바로 적어보세요."></textarea>
+          <textarea id="microText" placeholder="무슨 생각 중?"></textarea>
         </div>
-        <div class="field">
-          <label for="writeTags">태그 · 선택</label>
-          <input id="writeTags" placeholder="쉼표로 구분" />
-        </div>
-        <button class="primary-btn wide" id="saveWrite">저장</button>
+        <button class="primary-btn wide" id="publishMicro">올리기</button>
       </div>
     </section>
 
@@ -354,8 +364,8 @@
         <div class="sub">자주 쓰지는 않지만 필요할 때 찾는 기능.</div>
       </div>
       <div class="hub-list">
-        <button class="hub-btn" data-open-view="timeline"><strong>연표</strong><span>연도별 사건과 세계관 정보</span></button>
-        <button class="hub-btn" data-open-view="scripts"><strong>스크립트</strong><span>퀘스트별 스크립트 열람</span></button>
+        <button class="hub-btn" data-open-view="timeline"><strong>연표</strong><span>연도별 기록 확인</span></button>
+        <button class="hub-btn" data-open-view="scripts"><strong>스크립트</strong><span>항목별 텍스트 열람</span></button>
         <button class="hub-btn" data-open-view="links"><strong>링크</strong><span>외부 도구와 바로가기 · 준비 중</span></button>
         <button class="hub-btn" data-open-view="archive"><strong>보관함</strong><span>감상 기록 검색 · 필터 · 관리</span></button>
         <button class="hub-btn" data-open-view="library"><strong>자료실</strong><span>텍스트 자료 아카이브 · 준비 중</span></button>
@@ -364,28 +374,25 @@
 
     <section class="view" id="view-timeline">
       <div class="hero">
-        <button class="back-link" data-open-view="more">← 더보기</button>
         <div class="eyebrow">TIMELINE</div>
         <h1>연표</h1>
-        <div class="sub">주요 사건은 바로 보고, 세계관 사건은 필요할 때 펼칩니다.</div>
+        <div class="sub">연도별 기록을 확인할 수 있습니다.</div>
       </div>
-      <div class="timeline-jump"><div class="chips" id="timelineDecades"></div></div>
+      <div class="timeline-jump"><div class="timeline-controls"><div class="chips" id="timelineDecades"></div><div class="timeline-lang"><button id="timelineKo" class="active">한국어</button><button id="timelineEn">EN</button></div></div></div>
       <div id="timelineList"></div>
     </section>
 
     <section class="view" id="view-scripts">
       <div class="hero">
-        <button class="back-link" data-open-view="more">← 더보기</button>
         <div class="eyebrow">SCRIPTS</div>
         <h1>스크립트</h1>
-        <div class="sub">퀘스트를 골라 플레인 텍스트로 읽습니다.</div>
+        <div class="sub">항목을 골라 플레인 텍스트로 읽습니다.</div>
       </div>
       <div id="scriptList" class="script-list"></div>
     </section>
 
     <section class="view" id="view-script-detail">
       <div class="hero">
-        <button class="back-link" id="backToScripts">← 스크립트</button>
         <div class="eyebrow">SCRIPT</div>
         <h1 id="scriptDetailTitle">스크립트</h1>
       </div>
@@ -394,7 +401,6 @@
 
     <section class="view" id="view-links">
       <div class="hero">
-        <button class="back-link" data-open-view="more">← 더보기</button>
         <div class="eyebrow">LINKS</div>
         <h1>링크</h1>
         <div class="sub">외부 링크를 정리하기 전까지 비워둡니다.</div>
@@ -404,7 +410,6 @@
 
     <section class="view" id="view-library">
       <div class="hero">
-        <button class="back-link" data-open-view="more">← 더보기</button>
         <div class="eyebrow">LIBRARY</div>
         <h1>자료실</h1>
         <div class="sub">데이터를 연결하기 전까지 비워둡니다.</div>
@@ -483,7 +488,9 @@
     <div class="sheet-head"><h3>설정</h3><button data-close="settingsModal">닫기</button></div>
     <div class="settings-grid">
       <button id="exportBtn"><strong>백업 내보내기</strong><br><span class="small">현재 데이터를 JSON 파일로 저장합니다.</span></button>
-      <button id="importBtn"><strong>JSON 가져오기</strong><br><span class="small">앱 백업, 보관함, 할 거리, 스크립트, 연표 데이터를 불러옵니다.</span></button>
+      <button id="importBtn"><strong>JSON 가져오기</strong><br><span class="small">백업과 각 데이터 파일을 불러옵니다.</span></button>
+      <button id="exportMicroBtn"><strong>마이크로블로그 내보내기</strong><br><span class="small">마이크로블로그 데이터만 JSON으로 저장합니다.</span></button>
+      <button id="clearMicroBtn" class="danger"><strong>마이크로블로그 비우기</strong><br><span class="small">내보낸 파일을 확인한 뒤 별도로 비울 수 있습니다.</span></button>
       <button id="seedBtn"><strong>샘플 데이터 다시 넣기</strong><br><span class="small">비어 있을 때 화면 느낌을 확인할 수 있습니다.</span></button>
       <button id="clearBtn" class="danger"><strong>모든 로컬 데이터 지우기</strong><br><span class="small">이 기기의 데이터만 삭제합니다.</span></button>
     </div>
@@ -496,22 +503,23 @@
 <script>
 (() => {
   const KEY = 'archive-prototype-v2';
-  const DRAFT_KEY = 'archive-prototype-draft-v2';
   const NOTE_DRAFT_KEY = 'archive-prototype-note-draft-v1';
+  const MICRO_DRAFT_KEY = 'archive-prototype-microblog-draft-v1';
   const EVENT_KEY = 'archive-prototype-events-v2';
+  const TIMELINE_LANG_KEY = 'archive-prototype-timeline-lang-v1';
   const FEED_BATCH = 20;
   const ARCHIVE_BATCH = 100;
+  const FEED_COLLAPSE_THRESHOLD = 360;
+  const MICROBLOG_COLLAPSE_THRESHOLD = 700;
+  const DAY = 86400000;
   const now = Date.now();
-  const day = 86400000;
 
   const starter = {
-    notes: [],
-    scripts: [],
-    timeline: [],
+    notes: [], scripts: [], timeline: [], microblogPosts: [],
     records: [
-      { id: crypto.randomUUID(), content:'나중에 다시 읽으면 지금과 전혀 다르게 보일 수도 있는 장면. 일단 지금 느낀 걸 그대로 남겨두기.', tags:['장면'], priority:'', createdAt:new Date(now - 3*day).toISOString() },
-      { id: crypto.randomUUID(), content:'대사보다 먼저 이미지가 떠오르는 경우가 있다. 그럴 때는 설명하려고 하지 말고 장면 단위로 먼저 적어두자.', tags:['작업'], priority:'', createdAt:new Date(now - 10*day).toISOString() },
-      { id: crypto.randomUUID(), content:'예전에 쓴 생각을 다시 보면, 같은 대상을 보고도 내가 어디에 오래 머물렀는지가 보인다.', tags:['회고'], priority:'', createdAt:new Date(now - 42*day).toISOString() }
+      { id: crypto.randomUUID(), content:'나중에 다시 읽으면 지금과 전혀 다르게 보일 수도 있는 장면. 일단 지금 느낀 걸 그대로 남겨두기.', tags:['장면'], priority:'', createdAt:new Date(now - 3*DAY).toISOString() },
+      { id: crypto.randomUUID(), content:'대사보다 먼저 이미지가 떠오르는 경우가 있다. 그럴 때는 설명하려고 하지 말고 장면 단위로 먼저 적어두자.', tags:['작업'], priority:'', createdAt:new Date(now - 10*DAY).toISOString() },
+      { id: crypto.randomUUID(), content:'예전에 쓴 생각을 다시 보면, 같은 대상을 보고도 내가 어디에 오래 머물렀는지가 보인다.', tags:['회고'], priority:'', createdAt:new Date(now - 42*DAY).toISOString() }
     ],
     pool: [
       { id: crypto.randomUUID(), title:'예전에 저장한 기록 하나 다시 읽기', summary:'', assignee:'', dueDate:'', parents:[], status:'미완료', priority:'', children:[] },
@@ -519,689 +527,269 @@
     ]
   };
 
-  const $ = (s) => document.querySelector(s);
-  const $$ = (s) => [...document.querySelectorAll(s)];
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
   let state = load();
+  let currentView = 'feed';
   let editingRecordId = null;
   let editingNoteId = null;
   let activeNoteCategory = '전체';
   let noteDraft = loadNoteDraft();
+  let microDraft = loadMicroDraft();
+  let composingThreadId = null;
   let editingPoolId = null;
-  let draft = loadDraft();
-  let feedOrder = shuffle(state.records.map(r => r.id));
+  let currentScriptId = null;
+  let feedOrder = buildFeedOrder();
   let feedCursor = 0;
   let feedObserver = null;
   let archiveVisibleCount = ARCHIVE_BATCH;
+  let timelineLang = localStorage.getItem(TIMELINE_LANG_KEY) === 'en' ? 'en' : 'ko';
 
   function normalizeDate(v) {
     if (typeof v === 'number') return new Date(v).toISOString();
     if (typeof v === 'string' && v.trim()) return v.trim();
     return new Date().toISOString();
   }
-  function normalizeRecord(r = {}) {
-    const priority = ['A','B','C'].includes(r.priority) ? r.priority : '';
-    const tags = Array.isArray(r.tags) ? [...new Set(r.tags.map(x => String(x).trim()).filter(Boolean))] : [];
-    const out = {
-      id: r.id || crypto.randomUUID(),
-      content: String(r.content ?? r.text ?? ''),
-      createdAt: normalizeDate(r.createdAt),
-      tags,
-      priority
-    };
-    if (r.sourceUid) out.sourceUid = String(r.sourceUid);
-    if (r.sourceRow != null) out.sourceRow = r.sourceRow;
+  function normalizeRecord(r={}) {
+    const priority=['A','B','C'].includes(r.priority)?r.priority:'';
+    const tags=Array.isArray(r.tags)?[...new Set(r.tags.map(x=>String(x).trim()).filter(Boolean))]:[];
+    const out={id:r.id||crypto.randomUUID(),content:String(r.content??r.text??''),createdAt:normalizeDate(r.createdAt),tags,priority};
+    if(r.sourceUid) out.sourceUid=String(r.sourceUid);
+    if(r.sourceRow!=null) out.sourceRow=r.sourceRow;
     return out;
   }
-  function normalizeNote(n = {}) {
-    const createdAt = normalizeDate(n.createdAt);
-    const out = {
-      id: n.id || crypto.randomUUID(),
-      content: String(n.content ?? n.text ?? ''),
-      category: String(n.category || '').trim(),
-      createdAt,
-      updatedAt: normalizeDate(n.updatedAt || createdAt),
-      deletedAt: n.deletedAt ? normalizeDate(n.deletedAt) : ''
-    };
-    if (n.previousVersion && typeof n.previousVersion === 'object') {
-      out.previousVersion = {
-        content: String(n.previousVersion.content ?? ''),
-        category: String(n.previousVersion.category || '').trim(),
-        updatedAt: normalizeDate(n.previousVersion.updatedAt || createdAt)
-      };
-    }
+  function normalizeNote(n={}) {
+    const createdAt=normalizeDate(n.createdAt);
+    const out={id:n.id||crypto.randomUUID(),content:String(n.content??n.text??''),category:String(n.category||'').trim(),createdAt,updatedAt:normalizeDate(n.updatedAt||createdAt),deletedAt:n.deletedAt?normalizeDate(n.deletedAt):''};
+    if(n.previousVersion&&typeof n.previousVersion==='object') out.previousVersion={content:String(n.previousVersion.content??''),category:String(n.previousVersion.category||'').trim(),updatedAt:normalizeDate(n.previousVersion.updatedAt||createdAt)};
     return out;
   }
   function normalizeRelationList(v) {
-    if (!Array.isArray(v)) return [];
-    return v.map(x => {
-      if (typeof x === 'string') return { title:x, url:'' };
-      return { title:String(x?.title || ''), url:String(x?.url || '') };
-    }).filter(x => x.title);
+    if(!Array.isArray(v)) return [];
+    return v.map(x=>typeof x==='string'?{title:x,url:''}:{title:String(x?.title||''),url:String(x?.url||'')}).filter(x=>x.title);
   }
-  function normalizePool(p = {}) {
-    const legacyStatus = p.done === true ? '완료' : '미완료';
-    const status = ['미완료','상시 작업','완료'].includes(p.status) ? p.status : legacyStatus;
-    const priority = ['High','Med','Low'].includes(p.priority) ? p.priority : '';
-    const out = {
-      id: p.id || crypto.randomUUID(),
-      title: String(p.title || ''),
-      summary: String(p.summary || ''),
-      assignee: String(p.assignee || ''),
-      dueDate: String(p.dueDate || ''),
-      parents: normalizeRelationList(p.parents),
-      status,
-      priority,
-      children: normalizeRelationList(p.children)
-    };
-    if (p.sourceRow != null) out.sourceRow = p.sourceRow;
+  function normalizePool(p={}) {
+    const status=['미완료','상시 작업','완료'].includes(p.status)?p.status:(p.done===true?'완료':'미완료');
+    const priority=['High','Med','Low'].includes(p.priority)?p.priority:'';
+    const out={id:p.id||crypto.randomUUID(),title:String(p.title||''),summary:String(p.summary||''),assignee:String(p.assignee||''),dueDate:String(p.dueDate||''),parents:normalizeRelationList(p.parents),status,priority,children:normalizeRelationList(p.children)};
+    if(p.sourceRow!=null) out.sourceRow=p.sourceRow;
     return out;
   }
-  function normalizeScriptQuest(q = {}, index = 0) {
-    return {
-      id: String(q.id || `script-${index+1}`),
-      title: String(q.title || '').trim(),
-      order: Number.isFinite(Number(q.order)) ? Number(q.order) : index + 1,
-      content: String(q.content || '')
-    };
+  function normalizeScriptItem(item={},index=0) {
+    return {id:String(item.id||`script-${index+1}`),title:String(item.title||'').trim(),order:Number.isFinite(Number(item.order))?Number(item.order):index+1,content:String(item.content||'')};
   }
-  function normalizeTimelineItem(item = {}, index = 0) {
-    const events = v => Array.isArray(v) ? v.map(x=>String(x).trim()).filter(Boolean) : [];
-    return {
-      id: String(item.id || `timeline-${index+1}`),
-      year: String(item.year || '').trim(),
-      sortYear: Number(item.sortYear) || 0,
-      ages: {
-        j: String(item.ages?.j ?? '').trim(),
-        k: String(item.ages?.k ?? '').trim(),
-        v: String(item.ages?.v ?? '').trim()
-      },
-      mainEvents: events(item.mainEvents),
-      ncEvents: events(item.ncEvents),
-      worldEvents: events(item.worldEvents),
-      sourceRows: Array.isArray(item.sourceRows) ? item.sourceRows : []
-    };
+  function normalizeLocalizedEvent(v) {
+    if(typeof v==='string') { const s=v.trim(); return s?{en:s,ko:s}:null; }
+    if(!v||typeof v!=='object') return null;
+    const en=String(v.en??v.text??v.ko??'').trim();
+    const ko=String(v.ko??v.en??v.text??'').trim();
+    return en||ko?{en:en||ko,ko:ko||en}:null;
   }
+  function normalizeTimelineItem(item={},index=0) {
+    let ages=[];
+    if(Array.isArray(item.ages)) ages=item.ages.map(x=>({label:String(x?.label||'').trim(),value:String(x?.value??'').trim()})).filter(x=>x.label&&x.value!=='');
+    else if(item.ages&&typeof item.ages==='object') ages=Object.entries(item.ages).map(([label,value])=>({label:String(label).toUpperCase(),value:String(value??'').trim()})).filter(x=>x.value!=='');
+    const primarySource=Array.isArray(item.primaryEvents)?item.primaryEvents:(Array.isArray(item.mainEvents)?item.mainEvents:[]);
+    let secondarySource=Array.isArray(item.secondaryEvents)?item.secondaryEvents:[];
+    if(!secondarySource.length) {
+      secondarySource=Object.entries(item).filter(([key,val])=>Array.isArray(val)&&!['sourceRows','ages','primaryEvents','secondaryEvents','mainEvents'].includes(key)).flatMap(([,val])=>val);
+    }
+    return {id:String(item.id||`timeline-${index+1}`),year:String(item.year||'').trim(),sortYear:Number(item.sortYear)||0,ages,primaryEvents:primarySource.map(normalizeLocalizedEvent).filter(Boolean),secondaryEvents:secondarySource.map(normalizeLocalizedEvent).filter(Boolean),sourceRows:Array.isArray(item.sourceRows)?item.sourceRows:[]};
+  }
+  function normalizeMicroPost(p={}) {
+    const id=String(p.id||crypto.randomUUID());
+    return {id,content:String(p.content??p.text??''),createdAt:normalizeDate(p.createdAt),threadId:String(p.threadId||id),parentId:p.parentId?String(p.parentId):null,deletedAt:p.deletedAt?normalizeDate(p.deletedAt):'',archivedAt:p.archivedAt?normalizeDate(p.archivedAt):''};
+  }
+  function emptyState() { return {notes:[],scripts:[],timeline:[],microblogPosts:[],records:starter.records.map(normalizeRecord),pool:starter.pool.map(normalizePool)}; }
   function load() {
     try {
-      const raw = localStorage.getItem(KEY);
-      if (!raw) {
-        const initial = { notes: [], scripts: [], timeline: [], records: starter.records.map(normalizeRecord), pool: starter.pool.map(normalizePool) };
-        localStorage.setItem(KEY, JSON.stringify(initial));
-        return initial;
-      }
-      const parsed = JSON.parse(raw);
-      return {
-        notes: Array.isArray(parsed.notes) ? parsed.notes.map(normalizeNote) : [],
-        scripts: Array.isArray(parsed.scripts) ? parsed.scripts.map(normalizeScriptQuest).filter(x=>x.title) : [],
-        timeline: Array.isArray(parsed.timeline) ? parsed.timeline.map(normalizeTimelineItem).filter(x=>x.year) : [],
-        records: Array.isArray(parsed.records) ? parsed.records.map(normalizeRecord) : [],
-        pool: Array.isArray(parsed.pool) ? parsed.pool.map(normalizePool) : []
-      };
-    } catch (e) {
-      console.error(e);
-      return { notes: [], scripts: [], timeline: [], records: starter.records.map(normalizeRecord), pool: starter.pool.map(normalizePool) };
-    }
+      const raw=localStorage.getItem(KEY);
+      if(!raw){const initial=emptyState();localStorage.setItem(KEY,JSON.stringify(initial));return initial;}
+      const p=JSON.parse(raw);
+      return {notes:Array.isArray(p.notes)?p.notes.map(normalizeNote):[],scripts:Array.isArray(p.scripts)?p.scripts.map(normalizeScriptItem).filter(x=>x.title):[],timeline:Array.isArray(p.timeline)?p.timeline.map(normalizeTimelineItem).filter(x=>x.year):[],microblogPosts:Array.isArray(p.microblogPosts)?p.microblogPosts.map(normalizeMicroPost):[],records:Array.isArray(p.records)?p.records.map(normalizeRecord):[],pool:Array.isArray(p.pool)?p.pool.map(normalizePool):[]};
+    } catch(e){console.error(e);return emptyState();}
   }
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
-    catch (e) { console.error(e); toast('이 기기의 저장 공간이 부족합니다.'); return false; }
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true;}catch(e){console.error(e);toast('이 기기의 저장 공간이 부족합니다.');return false;}}
+  function loadNoteDraft(){try{return JSON.parse(localStorage.getItem(NOTE_DRAFT_KEY))||null;}catch{return null;}}
+  function saveNoteDraft(){if(!$('#noteEditor')?.classList.contains('open'))return;noteDraft={noteId:editingNoteId||null,content:$('#noteText').value,category:$('#noteCategory').value,updatedAt:new Date().toISOString()};localStorage.setItem(NOTE_DRAFT_KEY,JSON.stringify(noteDraft));updateNoteCharCount();}
+  function clearNoteDraft(){noteDraft=null;localStorage.removeItem(NOTE_DRAFT_KEY);}
+  function loadMicroDraft(){try{return JSON.parse(localStorage.getItem(MICRO_DRAFT_KEY))||null;}catch{return null;}}
+  function saveMicroDraft(){if(currentView!=='write')return;microDraft={threadId:composingThreadId||null,content:$('#microText')?.value||'',updatedAt:new Date().toISOString()};localStorage.setItem(MICRO_DRAFT_KEY,JSON.stringify(microDraft));}
+  function clearMicroDraft(){microDraft=null;localStorage.removeItem(MICRO_DRAFT_KEY);}
+  function logEvent(name){try{const events=JSON.parse(localStorage.getItem(EVENT_KEY)||'[]');events.push({name,at:Date.now()});localStorage.setItem(EVENT_KEY,JSON.stringify(events.slice(-1000)));}catch{}}
+  function esc(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function dateValue(v){const n=typeof v==='number'?v:Date.parse(v);return Number.isFinite(n)?n:0;}
+  function fmt(ts){return new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(dateValue(ts)));}
+  function fmtDateTime(ts){return new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(dateValue(ts)));}
+  function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function tagsFromInput(v){return [...new Set(v.split(',').map(x=>x.trim()).filter(Boolean))];}
+  function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),1700);}
+
+  const VIEW_PARENT={write:'feed',archive:'more',timeline:'more',scripts:'more','script-detail':'scripts',links:'more',library:'more'};
+  const VIEW_TITLE={feed:'피드',write:'새 글',notes:'노트',pool:'할 거리',more:'더보기',archive:'보관함',timeline:'연표',scripts:'스크립트','script-detail':'스크립트',links:'링크',library:'자료실'};
+  function updateChrome(){
+    let title=VIEW_TITLE[currentView]||'';
+    if(currentView==='write') title=composingThreadId?'이어쓰기':'새 글';
+    if(currentView==='script-detail'&&currentScriptId){const s=state.scripts.find(x=>x.id===currentScriptId);if(s) title=s.title;}
+    $('#pageTitle').textContent=title;
+    const parent=VIEW_PARENT[currentView];
+    $('#backTop').classList.toggle('hidden',!parent);
+    $('#shuffleTop').classList.toggle('is-hidden',currentView!=='feed');
+    $('#fab').classList.toggle('is-hidden',!['feed','notes','pool'].includes(currentView));
+    $('#fab').setAttribute('aria-label',currentView==='feed'?'새 글':currentView==='notes'?'새 노트':'할 거리 추가');
   }
-  function loadDraft() {
-    try { return JSON.parse(localStorage.getItem(DRAFT_KEY)) || { content:'', tags:'' }; }
-    catch { return { content:'', tags:'' }; }
+  function setView(name){
+    currentView=name;
+    $$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${name}`));
+    const navName=['archive','library','timeline','scripts','script-detail','links'].includes(name)?'more':name;
+    $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===navName));
+    if(name==='archive'){archiveVisibleCount=ARCHIVE_BATCH;renderArchive();}
+    if(name==='notes')renderNotes();
+    if(name==='pool')renderPool();
+    if(name==='timeline')renderTimeline();
+    if(name==='scripts')renderScripts();
+    updateChrome();
+    window.scrollTo({top:0,behavior:'instant'});
+    logEvent('view_'+name);
   }
-  function saveDraft() {
-    draft = { content: $('#writeText')?.value || '', tags: $('#writeTags')?.value || '' };
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+
+  function recordCard(r,feed=false){
+    const meta=feed?`<span>${fmt(r.createdAt)}</span>`:`${r.priority?`<span class="pill">${esc(r.priority)}</span>`:''}<span>${fmt(r.createdAt)}</span>`;
+    const isLong=feed&&String(r.content||'').length>FEED_COLLAPSE_THRESHOLD;
+    return `<article class="card ${feed?'feed-card':''}" data-record-id="${esc(r.id)}">${feed?'<button class="feed-copy" type="button" aria-label="전체복사">⧉</button>':''}<div class="card-meta">${meta}</div><div class="card-text ${isLong?'feed-text collapsed':''}">${esc(r.content)}</div>${isLong?'<button class="feed-expand" type="button" aria-expanded="false">더 보기</button>':''}${!feed&&r.tags?.length?`<div class="card-tags">${r.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div>`:''}</article>`;
   }
-  function clearDraft() {
-    draft = { content:'', tags:'' };
-    localStorage.removeItem(DRAFT_KEY);
+  function microThreads(){
+    const groups=new Map();
+    state.microblogPosts.filter(p=>!p.deletedAt).forEach(p=>{if(!groups.has(p.threadId))groups.set(p.threadId,[]);groups.get(p.threadId).push(p);});
+    return [...groups.entries()].map(([id,posts])=>{posts.sort((a,b)=>dateValue(a.createdAt)-dateValue(b.createdAt));return {id,posts,lastAt:Math.max(...posts.map(p=>dateValue(p.createdAt)))};});
   }
-  function loadNoteDraft() {
-    try { return JSON.parse(localStorage.getItem(NOTE_DRAFT_KEY)) || null; }
-    catch { return null; }
+  function threadById(id){return microThreads().find(t=>t.id===id)||null;}
+  function recentMicroThreads(){const cutoff=Date.now()-DAY;return microThreads().filter(t=>t.lastAt>=cutoff).sort((a,b)=>b.lastAt-a.lastAt);}
+  function oldMicroThreads(){const cutoff=Date.now()-DAY;return microThreads().filter(t=>t.lastAt<cutoff);}
+  function buildFeedOrder(){return shuffle([...state.records.map(r=>`a:${r.id}`),...oldMicroThreads().map(t=>`m:${t.id}`)]);}
+  function microThreadCard(thread){
+    const combined=thread.posts.reduce((n,p)=>n+p.content.length,0);
+    const isLong=combined>MICROBLOG_COLLAPSE_THRESHOLD||thread.posts.length>5;
+    return `<article class="card feed-card microblog-card" data-thread-id="${esc(thread.id)}"><button class="feed-copy micro-copy" type="button" aria-label="전체복사">⧉</button><div class="microblog-thread-content ${isLong?'collapsed':''}">${thread.posts.map(p=>`<div class="microblog-post"><div class="microblog-post-text">${esc(p.content)}</div><div class="microblog-post-date">${esc(fmtDateTime(p.createdAt))}</div></div>`).join('')}</div>${isLong?'<button class="feed-expand micro-expand" type="button" aria-expanded="false">더 보기</button>':''}<div class="card-actions"><button class="ghost-btn micro-reply" type="button">이어쓰기</button></div></article>`;
   }
-  function saveNoteDraft() {
-    if (!$('#noteEditor')?.classList.contains('open')) return;
-    noteDraft = {
-      noteId: editingNoteId || null,
-      content: $('#noteText').value,
-      category: $('#noteCategory').value,
-      updatedAt: new Date().toISOString()
-    };
-    localStorage.setItem(NOTE_DRAFT_KEY, JSON.stringify(noteDraft));
-    updateNoteCharCount();
-  }
-  function clearNoteDraft() {
-    noteDraft = null;
-    localStorage.removeItem(NOTE_DRAFT_KEY);
-  }
-  function logEvent(name) {
-    try {
-      const events = JSON.parse(localStorage.getItem(EVENT_KEY) || '[]');
-      events.push({ name, at: Date.now() });
-      localStorage.setItem(EVENT_KEY, JSON.stringify(events.slice(-1000)));
-    } catch {}
-  }
-  function esc(s='') {
-    return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-  }
-  function dateValue(v) {
-    const n = typeof v === 'number' ? v : Date.parse(v);
-    return Number.isFinite(n) ? n : 0;
-  }
-  function fmt(ts) {
-    return new Intl.DateTimeFormat('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date(dateValue(ts)));
-  }
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i=a.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-    return a;
-  }
-  function tagsFromInput(v) {
-    return [...new Set(v.split(',').map(x=>x.trim()).filter(Boolean))];
-  }
-  function toast(msg) {
-    const el = $('#toast'); el.textContent = msg; el.classList.add('show');
-    clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('show'), 1700);
-  }
-  function setView(name) {
-    $$('.view').forEach(v=>v.classList.toggle('active', v.id === `view-${name}`));
-    const navName = ['archive','library','timeline','scripts','script-detail','links'].includes(name) ? 'more' : name;
-    $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===navName));
-    if (name==='write') setTimeout(()=>$('#writeText').focus(), 40);
-    if (name==='archive') { archiveVisibleCount = ARCHIVE_BATCH; renderArchive(); }
-    if (name==='notes') renderNotes();
-    if (name==='pool') renderPool();
-    if (name==='timeline') renderTimeline();
-    if (name==='scripts') renderScripts();
-    window.scrollTo({top:0, behavior:'instant'});
-    logEvent('view_' + name);
-  }
-  const FEED_COLLAPSE_THRESHOLD = 360;
-  function recordCard(r, feed=false) {
-    const meta = feed
-      ? `<span>${fmt(r.createdAt)}</span>`
-      : `${r.priority ? `<span class="pill">${esc(r.priority)}</span>` : ''}<span>${fmt(r.createdAt)}</span>`;
-    const isLong = feed && String(r.content || '').length > FEED_COLLAPSE_THRESHOLD;
-    return `<article class="card ${feed?'feed-card':''}" data-record-id="${esc(r.id)}">
-      ${feed ? '<button class="feed-copy" type="button" aria-label="전체복사">⧉</button>' : ''}
-      <div class="card-meta">${meta}</div>
-      <div class="card-text ${isLong ? 'feed-text collapsed' : ''}">${esc(r.content)}</div>
-      ${isLong ? '<button class="feed-expand" type="button" aria-expanded="false">더 보기</button>' : ''}
-      ${!feed && r.tags?.length ? `<div class="card-tags">${r.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div>` : ''}
-    </article>`;
-  }
-  function bindRecordCards(root) {
+  function microThreadCopyText(thread){return thread.posts.map(p=>`${p.content}\n${fmtDateTime(p.createdAt)}`).join('\n\n');}
+  function bindCards(root){
     root.querySelectorAll('[data-record-id]').forEach(card=>{
-      if (card.dataset.bound) return;
-      card.dataset.bound = '1';
-      const isFeed = card.classList.contains('feed-card');
-      const expandBtn = card.querySelector('.feed-expand');
-      if (expandBtn) {
-        expandBtn.onclick = e => {
-          e.stopPropagation();
-          const text = card.querySelector('.feed-text');
-          const expanding = text.classList.contains('collapsed');
-          text.classList.toggle('collapsed', !expanding);
-          expandBtn.textContent = expanding ? '접기' : '더 보기';
-          expandBtn.setAttribute('aria-expanded', String(expanding));
-        };
-      }
-      const copyBtn = card.querySelector('.feed-copy');
-      if (copyBtn) {
-        copyBtn.onclick = async e => {
-          e.stopPropagation();
-          const r = state.records.find(x=>x.id===card.dataset.recordId);
-          if (!r) return;
-          try { await navigator.clipboard.writeText(r.content); toast('복사했습니다.'); logEvent('copy_feed'); }
-          catch { toast('복사하지 못했습니다.'); }
-        };
-      }
-      if (!isFeed) {
-        card.setAttribute('role','button');
-        card.setAttribute('tabindex','0');
-        const open=()=>openRecord(card.dataset.recordId);
-        card.onclick=e=>{ if (!e.target.closest('.feed-expand')) open(); };
-        card.onkeydown=e=>{
-          if ((e.key==='Enter' || e.key===' ') && !e.target.closest('.feed-expand')) { e.preventDefault(); open(); }
-        };
-      }
+      if(card.dataset.bound)return;card.dataset.bound='1';const isFeed=card.classList.contains('feed-card');
+      const expandBtn=card.querySelector('.feed-expand');if(expandBtn)expandBtn.onclick=e=>{e.stopPropagation();const text=card.querySelector('.feed-text');const expanding=text.classList.contains('collapsed');text.classList.toggle('collapsed',!expanding);expandBtn.textContent=expanding?'접기':'더 보기';expandBtn.setAttribute('aria-expanded',String(expanding));};
+      const copyBtn=card.querySelector('.feed-copy');if(copyBtn)copyBtn.onclick=async e=>{e.stopPropagation();const r=state.records.find(x=>x.id===card.dataset.recordId);if(!r)return;try{await navigator.clipboard.writeText(r.content);toast('복사했습니다.');logEvent('copy_feed');}catch{toast('복사하지 못했습니다.');}};
+      if(!isFeed){card.setAttribute('role','button');card.setAttribute('tabindex','0');const open=()=>openRecord(card.dataset.recordId);card.onclick=e=>{if(!e.target.closest('.feed-expand'))open();};card.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('.feed-expand')){e.preventDefault();open();}};}
+    });
+    root.querySelectorAll('[data-thread-id]').forEach(card=>{
+      if(card.dataset.bound)return;card.dataset.bound='1';
+      card.querySelector('.micro-expand')?.addEventListener('click',e=>{e.stopPropagation();const body=card.querySelector('.microblog-thread-content');const opening=body.classList.contains('collapsed');body.classList.toggle('collapsed',!opening);e.currentTarget.textContent=opening?'접기':'더 보기';e.currentTarget.setAttribute('aria-expanded',String(opening));});
+      card.querySelector('.micro-copy')?.addEventListener('click',async e=>{e.stopPropagation();const t=threadById(card.dataset.threadId);if(!t)return;try{await navigator.clipboard.writeText(microThreadCopyText(t));toast('복사했습니다.');logEvent('copy_micro_thread');}catch{toast('복사하지 못했습니다.');}});
+      card.querySelector('.micro-reply')?.addEventListener('click',e=>{e.stopPropagation();openMicroComposer(card.dataset.threadId);});
     });
   }
-  function resetFeed(reshuffle=true) {
-    if (reshuffle) feedOrder = shuffle(state.records.map(r=>r.id));
-    feedCursor = 0;
-    if (feedObserver) feedObserver.disconnect();
-    $('#feedList').innerHTML = '';
-    appendFeedBatch();
+  function resetFeed(reshuffle=true){if(reshuffle)feedOrder=buildFeedOrder();feedCursor=0;if(feedObserver)feedObserver.disconnect();const list=$('#feedList');const recent=recentMicroThreads();list.innerHTML=recent.map(microThreadCard).join('');bindCards(list);appendFeedBatch();if(!recent.length&&!feedOrder.length)list.innerHTML='<div class="empty">아직 표시할 기록이 없습니다.</div>';}
+  function appendFeedBatch(){const list=$('#feedList');list.querySelector('#feedSentinel')?.remove();const batch=feedOrder.slice(feedCursor,feedCursor+FEED_BATCH);if(batch.length){const records=new Map(state.records.map(r=>[r.id,r]));const threads=new Map(oldMicroThreads().map(t=>[t.id,t]));const html=batch.map(token=>{const [type,id]=token.split(':');return type==='a'&&records.get(id)?recordCard(records.get(id),true):type==='m'&&threads.get(id)?microThreadCard(threads.get(id)):'';}).join('');list.insertAdjacentHTML('beforeend',html);feedCursor+=batch.length;bindCards(list);}if(feedCursor<feedOrder.length){list.insertAdjacentHTML('beforeend','<div id="feedSentinel" style="height:24px"></div>');feedObserver?.disconnect();feedObserver=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting))appendFeedBatch();},{rootMargin:'500px 0px'});feedObserver.observe($('#feedSentinel'));}}
+  function reshuffleFeed(){feedOrder=buildFeedOrder();resetFeed(false);window.scrollTo({top:0,behavior:'smooth'});logEvent('shuffle_feed');}
+
+  function openMicroComposer(threadId=null){
+    const draftConflict=microDraft&&microDraft.content?.trim()&&(microDraft.threadId||null)!==(threadId||null);
+    if(draftConflict&&!confirm('다른 작성 중 초안이 있습니다. 기존 초안을 버리고 계속할까요?'))return;
+    if(draftConflict)clearMicroDraft();
+    composingThreadId=threadId||null;
+    const thread=threadId?threadById(threadId):null;
+    $('#microComposerHeading').textContent=thread?'이어쓰기':'새 글';
+    $('#microThreadContext').innerHTML=thread?`<div class="microblog-context"><div class="microblog-context-label">이전 글</div>${thread.posts.map(p=>`<div class="microblog-post"><div class="microblog-post-text">${esc(p.content)}</div><div class="microblog-post-date">${esc(fmtDateTime(p.createdAt))}</div></div>`).join('')}</div>`:'';
+    const matching=microDraft&&(microDraft.threadId||null)===(composingThreadId||null);
+    $('#microText').value=matching?microDraft.content||'':'';
+    setView('write');
+    setTimeout(()=>$('#microText').focus(),50);
   }
-  function appendFeedBatch() {
-    const list = $('#feedList');
-    list.querySelector('#feedSentinel')?.remove();
-    if (!feedOrder.length) {
-      list.innerHTML='<div class="empty">아직 기록이 없습니다.<br>＋ 버튼으로 첫 기록을 남겨보세요.</div>';
-      return;
-    }
-    const byId = new Map(state.records.map(r=>[r.id,r]));
-    const batch = feedOrder.slice(feedCursor, feedCursor + FEED_BATCH).map(id=>byId.get(id)).filter(Boolean);
-    if (batch.length) {
-      list.insertAdjacentHTML('beforeend', batch.map(r=>recordCard(r,true)).join(''));
-      feedCursor += batch.length;
-      bindRecordCards(list);
-    }
-    if (feedCursor < feedOrder.length) {
-      list.insertAdjacentHTML('beforeend', '<div id="feedSentinel" style="height:24px"></div>');
-      feedObserver?.disconnect();
-      feedObserver = new IntersectionObserver(entries=>{
-        if (entries.some(e=>e.isIntersecting)) appendFeedBatch();
-      }, { rootMargin:'500px 0px' });
-      feedObserver.observe($('#feedSentinel'));
-    }
+  function publishMicro(){
+    const content=$('#microText').value.trim();if(!content)return toast('내용을 적어주세요.');
+    const id=crypto.randomUUID();let threadId=composingThreadId||id;let parentId=null;
+    if(composingThreadId){const t=threadById(composingThreadId);parentId=t?.posts.at(-1)?.id||null;}
+    state.microblogPosts.push(normalizeMicroPost({id,content,createdAt:new Date().toISOString(),threadId,parentId}));
+    if(!save())return;clearMicroDraft();composingThreadId=null;$('#microText').value='';feedOrder=buildFeedOrder();resetFeed(false);toast('올렸습니다.');logEvent(parentId?'reply_micro':'create_micro');setView('feed');
   }
-  function reshuffleFeed() {
-    resetFeed(true);
-    window.scrollTo({top:0, behavior:'smooth'});
-    logEvent('shuffle_feed');
-  }
-  function createRecord() {
-    const content=$('#writeText').value.trim(); if(!content) return toast('내용을 적어주세요.');
-    const rec=normalizeRecord({ id:crypto.randomUUID(), content, tags:tagsFromInput($('#writeTags').value), priority:'', createdAt:new Date().toISOString() });
-    state.records.unshift(rec);
-    if (!save()) return;
-    $('#writeText').value=''; $('#writeTags').value=''; clearDraft(); toast('저장했습니다.');
-    resetFeed(true); archiveVisibleCount=ARCHIVE_BATCH; renderArchive(); logEvent('create_record'); setView('feed');
-  }
-  function openRecord(id) {
-    const r=state.records.find(x=>x.id===id); if(!r)return;
-    editingRecordId=id;
-    $('#editText').value=r.content;
-    $('#editTags').value=(r.tags||[]).join(', ');
-    $('#recordModalTitle').textContent = r.priority ? `기록 · ${r.priority}` : '기록';
-    $('#recordModal').classList.add('open'); logEvent('open_record');
-  }
-  function saveRecordEdit() {
-    const r=state.records.find(x=>x.id===editingRecordId); if(!r)return;
-    r.content=$('#editText').value.trim(); r.tags=tagsFromInput($('#editTags').value);
-    if (!save()) return;
-    closeModal('recordModal'); resetFeed(false); renderArchive(); toast('수정했습니다.'); logEvent('edit_record');
-  }
-  function deleteRecord() {
-    if(!confirm('이 기록을 삭제할까요?')) return;
-    state.records=state.records.filter(x=>x.id!==editingRecordId);
-    feedOrder=feedOrder.filter(id=>id!==editingRecordId);
-    if (!save()) return;
-    closeModal('recordModal'); resetFeed(false); renderArchive(); toast('삭제했습니다.'); logEvent('delete_record');
-  }
-  function archiveFilterOptions() {
-    const tags=[...new Set(state.records.flatMap(r=>r.tags||[]))].sort((a,b)=>a.localeCompare(b,'ko'));
-    const tagSel=$('#archiveTag');
-    const currentTag=tagSel.value;
-    tagSel.innerHTML='<option value="">전체</option>'+tags.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
-    if(tags.includes(currentTag)) tagSel.value=currentTag;
-    const monthSel=$('#archiveMonth');
-    if(monthSel.options.length===1) monthSel.insertAdjacentHTML('beforeend', Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}월</option>`).join(''));
-    const daySel=$('#archiveDay');
-    if(daySel.options.length===1) daySel.insertAdjacentHTML('beforeend', Array.from({length:31},(_,i)=>`<option value="${i+1}">${i+1}일</option>`).join(''));
-  }
-  function archiveMatches() {
-    const q=$('#searchInput').value.trim().toLowerCase();
-    const year=Number($('#archiveYear').value)||0;
-    const month=Number($('#archiveMonth').value)||0;
-    const day=Number($('#archiveDay').value)||0;
-    const tag=$('#archiveTag').value;
-    const priority=$('#archivePriority').value;
-    const dir=$('#archiveSort').value==='asc'?1:-1;
-    let list=[...state.records];
-    if(q) list=list.filter(r=>`${r.content} ${(r.tags||[]).join(' ')} ${r.priority||''}`.toLowerCase().includes(q));
-    if(tag) list=list.filter(r=>(r.tags||[]).includes(tag));
-    if(priority) list=list.filter(r=>r.priority===priority);
-    if(year||month||day) list=list.filter(r=>{
-      const d=new Date(dateValue(r.createdAt));
-      if(year && d.getFullYear()!==year) return false;
-      if(month && d.getMonth()+1!==month) return false;
-      if(day && d.getDate()!==day) return false;
-      return true;
-    });
-    list.sort((a,b)=>dir*(dateValue(a.createdAt)-dateValue(b.createdAt)));
-    return list;
-  }
-  function renderArchive() {
-    archiveFilterOptions();
-    const list = archiveMatches();
-    $('#archiveStats').innerHTML=`<span>전체 <strong>${state.records.length}</strong></span><span>현재 <strong>${list.length}</strong></span>`;
-    const visible=list.slice(0,archiveVisibleCount);
-    $('#archiveList').innerHTML=visible.length
-      ? visible.map(r=>recordCard(r,false)).join('') + (visible.length<list.length?'<button class="ghost-btn wide" id="archiveMore" style="margin:4px 0 18px">더 보기</button>':'')
-      : '<div class="empty">조건에 맞는 기록이 없습니다.</div>';
-    bindRecordCards($('#archiveList'));
-    $('#archiveMore')?.addEventListener('click',()=>{archiveVisibleCount += ARCHIVE_BATCH; renderArchive();});
-  }
-  function timelineAgeLabel(item) {
-    const parts=[];
-    if(item.ages?.j!=='') parts.push(`J ${esc(item.ages.j)}`);
-    if(item.ages?.k!=='') parts.push(`K ${esc(item.ages.k)}`);
-    if(item.ages?.v!=='') parts.push(`V ${esc(item.ages.v)}`);
-    return parts.join(' · ');
-  }
-  function timelineEventList(items=[]) {
-    return items.map(x=>`<div class="timeline-event">${esc(x)}</div>`).join('');
-  }
-  function renderTimeline() {
-    const items=[...state.timeline].sort((a,b)=>a.sortYear-b.sortYear || a.year.localeCompare(b.year));
-    const decades=[
-      {label:'2000년대 이전', value:'pre2000'},
-      ...[2000,2010,2020,2030,2040,2050,2060,2070].map(x=>({label:String(x),value:String(x)}))
-    ];
+
+  function openRecord(id){const r=state.records.find(x=>x.id===id);if(!r)return;editingRecordId=id;$('#editText').value=r.content;$('#editTags').value=(r.tags||[]).join(', ');$('#recordModalTitle').textContent=r.priority?`기록 · ${r.priority}`:'기록';$('#recordModal').classList.add('open');logEvent('open_record');}
+  function saveRecordEdit(){const r=state.records.find(x=>x.id===editingRecordId);if(!r)return;r.content=$('#editText').value.trim();r.tags=tagsFromInput($('#editTags').value);if(!save())return;closeModal('recordModal');feedOrder=buildFeedOrder();resetFeed(false);renderArchive();toast('수정했습니다.');logEvent('edit_record');}
+  function deleteRecord(){if(!confirm('이 기록을 삭제할까요?'))return;state.records=state.records.filter(x=>x.id!==editingRecordId);if(!save())return;closeModal('recordModal');feedOrder=buildFeedOrder();resetFeed(false);renderArchive();toast('삭제했습니다.');logEvent('delete_record');}
+  function archiveFilterOptions(){const tags=[...new Set(state.records.flatMap(r=>r.tags||[]))].sort((a,b)=>a.localeCompare(b,'ko'));const tagSel=$('#archiveTag');const currentTag=tagSel.value;tagSel.innerHTML='<option value="">전체</option>'+tags.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');if(tags.includes(currentTag))tagSel.value=currentTag;const monthSel=$('#archiveMonth');if(monthSel.options.length===1)monthSel.insertAdjacentHTML('beforeend',Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}월</option>`).join(''));const daySel=$('#archiveDay');if(daySel.options.length===1)daySel.insertAdjacentHTML('beforeend',Array.from({length:31},(_,i)=>`<option value="${i+1}">${i+1}일</option>`).join(''));}
+  function archiveMatches(){const q=$('#searchInput').value.trim().toLowerCase();const year=Number($('#archiveYear').value)||0;const month=Number($('#archiveMonth').value)||0;const day=Number($('#archiveDay').value)||0;const tag=$('#archiveTag').value;const priority=$('#archivePriority').value;const dir=$('#archiveSort').value==='asc'?1:-1;let list=[...state.records];if(q)list=list.filter(r=>`${r.content} ${(r.tags||[]).join(' ')} ${r.priority||''}`.toLowerCase().includes(q));if(tag)list=list.filter(r=>(r.tags||[]).includes(tag));if(priority)list=list.filter(r=>r.priority===priority);if(year||month||day)list=list.filter(r=>{const d=new Date(dateValue(r.createdAt));if(year&&d.getFullYear()!==year)return false;if(month&&d.getMonth()+1!==month)return false;if(day&&d.getDate()!==day)return false;return true;});list.sort((a,b)=>dir*(dateValue(a.createdAt)-dateValue(b.createdAt)));return list;}
+  function renderArchive(){archiveFilterOptions();const list=archiveMatches();$('#archiveStats').innerHTML=`<span>전체 <strong>${state.records.length}</strong></span><span>현재 <strong>${list.length}</strong></span>`;const visible=list.slice(0,archiveVisibleCount);$('#archiveList').innerHTML=visible.length?visible.map(r=>recordCard(r,false)).join('')+(visible.length<list.length?'<button class="ghost-btn wide" id="archiveMore" style="margin:4px 0 18px">더 보기</button>':''):'<div class="empty">조건에 맞는 기록이 없습니다.</div>';bindCards($('#archiveList'));$('#archiveMore')?.addEventListener('click',()=>{archiveVisibleCount+=ARCHIVE_BATCH;renderArchive();});}
+
+  function timelineAgeLabel(item){return (item.ages||[]).map(x=>`${esc(x.label)} ${esc(x.value)}`).join(' · ');}
+  function timelineEventText(event){return event?.[timelineLang]||event?.ko||event?.en||'';}
+  function timelineEventList(items=[]){return items.map(x=>`<div class="timeline-event">${esc(timelineEventText(x))}</div>`).join('');}
+  function renderTimeline(){
+    const items=[...state.timeline].sort((a,b)=>a.sortYear-b.sortYear||a.year.localeCompare(b.year));
+    const decades=[{label:'2000년대 이전',value:'pre2000'},...[2000,2010,2020,2030,2040,2050,2060,2070].map(x=>({label:String(x),value:String(x)}))];
     $('#timelineDecades').innerHTML=decades.map(d=>`<button class="chip" data-decade="${d.value}">${d.label}</button>`).join('');
-    $('#timelineList').innerHTML=items.length?`<div class="timeline-list">${items.map(item=>{
-      const worldCount=(item.ncEvents?.length||0)+(item.worldEvents?.length||0);
-      const main=item.mainEvents?.length?timelineEventList(item.mainEvents):'';
-      const world=worldCount?`<button class="timeline-world-toggle" data-world-toggle="${esc(item.id)}" aria-expanded="false">세계관 ${worldCount}건 ▾</button>
-        <div class="timeline-world" data-world="${esc(item.id)}">
-          ${item.ncEvents?.length?`<h3>NC</h3>${timelineEventList(item.ncEvents)}`:''}
-          ${item.worldEvents?.length?`<h3>WORLD</h3>${timelineEventList(item.worldEvents)}`:''}
-        </div>`:'';
-      return `<section class="timeline-block" id="timeline-${esc(item.id)}" data-sort-year="${item.sortYear}">
-        <div class="timeline-head"><div class="timeline-year">${esc(item.year)}</div><div class="timeline-ages">${timelineAgeLabel(item)}</div></div>
-        <div class="timeline-events">${main}</div>${world}
-      </section>`;
-    }).join('')}</div>`:'<div class="empty">연표 JSON을 가져오면 여기에 표시됩니다.</div>';
-    $$('#timelineDecades [data-decade]').forEach(btn=>btn.onclick=()=>{
-      if(!items.length) return;
-      const value=btn.dataset.decade;
-      let target;
-      if(value==='pre2000') target=items.find(x=>x.sortYear<2000);
-      else { const d=Number(value); target=items.find(x=>x.sortYear>=d && x.sortYear<d+10); }
-      if(!target) return toast('해당 시기의 항목이 없습니다.');
-      document.getElementById(`timeline-${target.id}`)?.scrollIntoView({behavior:'smooth',block:'start'});
-    });
-    $$('[data-world-toggle]').forEach(btn=>btn.onclick=()=>{
-      const panel=[...document.querySelectorAll('[data-world]')].find(x=>x.dataset.world===btn.dataset.worldToggle);
-      if(!panel) return;
-      const open=!panel.classList.contains('open');
-      panel.classList.toggle('open',open);
-      btn.textContent=`세계관 ${panel.querySelectorAll('.timeline-event').length}건 ${open?'▴':'▾'}`;
-      btn.setAttribute('aria-expanded',String(open));
-    });
+    $('#timelineKo').classList.toggle('active',timelineLang==='ko');$('#timelineEn').classList.toggle('active',timelineLang==='en');
+    $('#timelineList').innerHTML=items.length?`<div class="timeline-list">${items.map(item=>{const hasPrimary=item.primaryEvents?.length>0;const primary=hasPrimary?`<div class="timeline-group"><div class="timeline-group-title">주요 기록</div><div class="timeline-events">${timelineEventList(item.primaryEvents)}</div></div>`:'';const secondary=item.secondaryEvents?.length?`<div class="timeline-group"><div class="timeline-group-title">기타 기록</div><div class="timeline-events">${timelineEventList(item.secondaryEvents)}</div></div>`:'';return `<section class="timeline-block ${hasPrimary?'':'secondary-only'}" id="timeline-${esc(item.id)}" data-sort-year="${item.sortYear}"><div class="timeline-head"><div class="timeline-year">${esc(item.year)}</div><div class="timeline-ages">${timelineAgeLabel(item)}</div></div>${primary}${secondary}</section>`;}).join('')}</div>`:'<div class="empty">연표 JSON을 가져오면 여기에 표시됩니다.</div>';
+    $$('#timelineDecades [data-decade]').forEach(btn=>btn.onclick=()=>{if(!items.length)return;const value=btn.dataset.decade;let target;if(value==='pre2000')target=items.find(x=>x.sortYear<2000);else{const d=Number(value);target=items.find(x=>x.sortYear>=d&&x.sortYear<d+10);}if(!target)return toast('해당 시기의 항목이 없습니다.');document.getElementById(`timeline-${target.id}`)?.scrollIntoView({behavior:'smooth',block:'start'});});
   }
-  function renderScripts() {
-    const list=[...state.scripts].sort((a,b)=>a.order-b.order || a.title.localeCompare(b.title));
-    $('#scriptList').innerHTML=list.length?list.map(q=>`<button class="script-row" data-script-id="${esc(q.id)}"><strong>${esc(q.title)}</strong><span>›</span></button>`).join(''):'<div class="empty">스크립트 JSON을 가져오면 퀘스트 목록이 표시됩니다.</div>';
-    $$('#scriptList [data-script-id]').forEach(btn=>btn.onclick=()=>openScript(btn.dataset.scriptId));
-  }
-  function openScript(id) {
-    const q=state.scripts.find(x=>x.id===id);
-    if(!q) return;
-    $('#scriptDetailTitle').textContent=q.title;
-    $('#scriptDetailText').textContent=q.content;
-    setView('script-detail');
-    logEvent('open_script');
-  }
-  function activeNotes() { return state.notes.filter(n=>!n.deletedAt); }
-  function noteCategories() {
-    return [...new Set(activeNotes().map(n=>n.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
-  }
-  function updateNoteCharCount() {
-    $('#noteCharCount').textContent = `${($('#noteText')?.value || '').length.toLocaleString()}자`;
-  }
-  function autoGrowNote() {
-    const el=$('#noteText');
-    el.style.height='auto';
-    el.style.height=`${Math.max(el.scrollHeight, window.innerHeight-130)}px`;
-  }
-  function renderNotes() {
-    const categories=noteCategories();
-    if(activeNoteCategory!=='전체' && !categories.includes(activeNoteCategory)) activeNoteCategory='전체';
-    $('#noteCategoryChips').innerHTML=['전체', ...categories].map(c=>`<button class="chip ${activeNoteCategory===c?'active':''}" data-note-category="${esc(c)}">${esc(c)}</button>`).join('');
-    $$('#noteCategoryChips [data-note-category]').forEach(btn=>btn.onclick=()=>{activeNoteCategory=btn.dataset.noteCategory;renderNotes();});
-    const q=$('#noteSearchInput').value.trim().toLowerCase();
-    const all=[...activeNotes()].sort((a,b)=>dateValue(b.updatedAt)-dateValue(a.updatedAt));
-    let list=activeNoteCategory==='전체'?all:all.filter(n=>n.category===activeNoteCategory);
-    if(q) list=list.filter(n=>`${n.content} ${n.category}`.toLowerCase().includes(q));
-    const draftCard = noteDraft ? `<article class="card note-item note-draft-card" id="resumeNoteDraft">
-      <div class="eyebrow">DRAFT</div>
-      <div class="note-preview">${esc(noteDraft.content || '(빈 초안)')}</div>
-      <div class="note-meta"><span>작성 중인 초안 · 이어쓰기</span></div>
-    </article>` : '';
-    $('#noteList').innerHTML=draftCard + (list.length?list.map(n=>`<article class="card note-item" data-note-id="${esc(n.id)}">
-      <div class="note-preview">${esc(n.content)}</div>
-      <div class="note-meta">${n.category?`<span class="note-category">${esc(n.category)}</span>`:''}<span>${fmt(n.updatedAt)} 수정</span></div>
-    </article>`).join(''):`<div class="empty">${activeNotes().length?'조건에 맞는 노트가 없습니다.':'아직 노트가 없습니다.<br>+ 새 노트로 첫 창작 메모를 적어보세요.'}</div>`);
-    $('#resumeNoteDraft')?.addEventListener('click',()=>openNote(noteDraft.noteId || null, true));
-    $$('#noteList [data-note-id]').forEach(card=>{ card.onclick=()=>openNote(card.dataset.noteId); });
-  }
-  function openNote(id=null, resumeDraft=false) {
-    const matchingDraft = noteDraft && ((noteDraft.noteId||null)===(id||null));
-    if(noteDraft && !matchingDraft && !resumeDraft){
-      if(!confirm('다른 작성 중 초안이 있습니다. 이 노트를 열면 기존 초안을 버립니다. 계속할까요?')) return;
-      clearNoteDraft();
-    }
-    editingNoteId=id;
-    const n=id?state.notes.find(x=>x.id===id):null;
-    const useDraft = resumeDraft && matchingDraft;
-    $('#noteCategoryOptions').innerHTML=noteCategories().map(c=>`<option value="${esc(c)}"></option>`).join('');
-    $('#noteCategory').value=useDraft ? noteDraft.category||'' : n?.category||'';
-    $('#noteText').value=useDraft ? noteDraft.content||'' : n?.content||'';
-    $('#deleteNote').style.display=n?'inline-flex':'none';
-    $('#noteEditor').classList.add('open');
-    document.body.style.overflow='hidden';
-    updateNoteCharCount();
-    requestAnimationFrame(()=>{ autoGrowNote(); $('#noteText').focus(); });
-  }
-  function commitNoteAndClose() {
-    const content=$('#noteText').value;
-    const category=$('#noteCategory').value.trim();
-    const trimmed=content.trim();
-    const nowIso=new Date().toISOString();
-    if(editingNoteId){
-      const n=state.notes.find(x=>x.id===editingNoteId);
-      if(n){
-        const changed = n.content!==content || n.category!==category;
-        if(changed){
-          n.previousVersion={content:n.content, category:n.category, updatedAt:n.updatedAt};
-          n.content=content; n.category=category; n.updatedAt=nowIso;
-          if(!save()) return;
-          logEvent('edit_note');
-        }
-      }
-    } else if(trimmed){
-      state.notes.unshift(normalizeNote({id:crypto.randomUUID(), content, category, createdAt:nowIso, updatedAt:nowIso}));
-      if(!save()) return;
-      logEvent('create_note');
-    }
-    clearNoteDraft();
-    closeNoteEditor();
-    renderNotes();
-  }
-  function closeNoteEditor() {
-    $('#noteEditor').classList.remove('open');
-    document.body.style.overflow='';
-    editingNoteId=null;
-  }
-  async function copyCurrentNote() {
-    try { await navigator.clipboard.writeText($('#noteText').value); toast('전체복사했습니다.'); logEvent('copy_note'); }
-    catch { toast('복사하지 못했습니다.'); }
-  }
-  function deleteNote() {
-    if(!editingNoteId || !confirm('이 노트를 삭제할까요?'))return;
-    const n=state.notes.find(x=>x.id===editingNoteId);
-    if(!n)return;
-    n.deletedAt=new Date().toISOString();
-    n.updatedAt=n.deletedAt;
-    if(!save())return;
-    clearNoteDraft();
-    closeNoteEditor();
-    renderNotes();
-    toast('삭제했습니다.');
-    logEvent('delete_note');
-  }
-  function poolMeta(p) {
-    const parts = [];
-    if (p.status) parts.push(p.status);
-    if (p.priority) parts.push(p.priority);
-    if (p.dueDate) parts.push(`기한 ${p.dueDate}`);
-    return parts;
-  }
-  function renderPool() {
-    const active=state.pool.filter(x=>x.status!=='완료');
-    const done=state.pool.filter(x=>x.status==='완료');
-    const pick=active.length?active[Math.floor(Math.random()*active.length)]:null;
-    $('#poolPickCard').innerHTML=pick?`<div class="eyebrow">RANDOM PICK</div>
-      <div style="font-size:19px;font-weight:750;line-height:1.4;margin-top:7px">${esc(pick.title)}</div>
-      ${pick.summary?`<div class="pool-summary">${esc(pick.summary)}</div>`:''}
-      <div class="pool-meta">${poolMeta(pick).map(esc).join(' · ') || '조건 없음'}</div>
-      ${pick.parents?.length?`<div class="pool-rel">↳ ${pick.parents.map(x=>esc(x.title)).join(' · ')}</div>`:''}
-      <div class="card-actions"><button class="ghost-btn" id="repickPool">다른 거</button><button class="primary-btn" data-edit-pool="${esc(pick.id)}">열기</button></div>`
-      :'<div class="empty">미완료인 할 거리가 없습니다.</div>';
-    const combined=[...active,...done];
-    $('#poolList').innerHTML=combined.length?combined.map(p=>`<div class="card pool-item ${p.status==='완료'?'done':''}" data-pool-id="${esc(p.id)}">
-      <button class="check toggle-pool" aria-label="${p.status==='완료'?'완료 해제':'완료 처리'}">${p.status==='완료'?'✓':''}</button>
-      <div class="pool-main">
-        <div class="pool-title">${esc(p.title)}</div>
-        <div class="pool-meta">${poolMeta(p).map(esc).join(' · ')}</div>
-        ${p.summary?`<div class="pool-summary">${esc(p.summary)}</div>`:''}
-        ${p.parents?.length?`<div class="pool-rel">↳ ${p.parents.map(x=>esc(x.title)).join(' · ')}</div>`:''}
-      </div>
-      <button class="ghost-btn edit-pool">열기</button>
-    </div>`).join(''):'<div class="empty">+ 추가로 후보를 쌓아두세요.</div>';
-    $('#repickPool')?.addEventListener('click',()=>{renderPool();logEvent('repick_pool');});
-    $('[data-edit-pool]')?.addEventListener('click',e=>openPool(e.currentTarget.dataset.editPool));
-    $$('#poolList .toggle-pool').forEach(btn=>btn.onclick=e=>{
-      const id=e.target.closest('[data-pool-id]').dataset.poolId;
-      const p=state.pool.find(x=>x.id===id);
-      p.status = p.status==='완료' ? '미완료' : '완료';
-      save(); renderPool(); logEvent('toggle_pool');
-    });
-    $$('#poolList .edit-pool').forEach(btn=>btn.onclick=e=>openPool(e.target.closest('[data-pool-id]').dataset.poolId));
-  }
-  function openPool(id=null) {
-    editingPoolId=id;
-    const p=id?state.pool.find(x=>x.id===id):null;
-    $('#poolModalTitle').textContent=p?'할 거리 수정':'할 거리 추가';
-    $('#poolTitle').value=p?.title||'';
-    $('#poolSummary').value=p?.summary||'';
-    $('#poolStatus').value=p?.status||'미완료';
-    $('#poolPriority').value=p?.priority||'';
-    $('#poolDueDate').value=p?.dueDate||'';
-    $('#poolAssignee').value=p?.assignee||'';
-    const rel=[];
-    if(p?.parents?.length) rel.push(`상위 항목: ${p.parents.map(x=>x.title).join(', ')}`);
-    if(p?.children?.length) rel.push(`하위 항목: ${p.children.map(x=>x.title).join(', ')}`);
-    $('#poolRelations').textContent=rel.join('\n');
-    $('#poolRelations').style.display=rel.length?'block':'none';
-    $('#deletePool').style.display=p?'block':'none'; $('#poolModal').classList.add('open');
-    setTimeout(()=>$('#poolTitle').focus(),50);
-  }
-  function savePool() {
-    const title=$('#poolTitle').value.trim(); if(!title)return toast('작업명을 적어주세요.');
-    if(editingPoolId){
-      const p=state.pool.find(x=>x.id===editingPoolId);
-      p.title=title;
-      p.summary=$('#poolSummary').value;
-      p.status=$('#poolStatus').value;
-      p.priority=$('#poolPriority').value;
-      p.dueDate=$('#poolDueDate').value.trim();
-      p.assignee=$('#poolAssignee').value.trim();
-    } else {
-      state.pool.unshift(normalizePool({
-        id:crypto.randomUUID(), title, summary:$('#poolSummary').value,
-        status:$('#poolStatus').value, priority:$('#poolPriority').value,
-        dueDate:$('#poolDueDate').value.trim(), assignee:$('#poolAssignee').value.trim(),
-        parents:[], children:[]
-      }));
-    }
-    if (!save()) return;
-    closeModal('poolModal');renderPool();toast('저장했습니다.');logEvent(editingPoolId?'edit_pool':'create_pool');
-  }
-  function deletePool() {
-    if(!confirm('이 항목을 삭제할까요?'))return;
-    state.pool=state.pool.filter(x=>x.id!==editingPoolId);if (!save()) return;closeModal('poolModal');renderPool();toast('삭제했습니다.');logEvent('delete_pool');
-  }
+  function setTimelineLang(lang){timelineLang=lang;localStorage.setItem(TIMELINE_LANG_KEY,lang);renderTimeline();logEvent('timeline_lang_'+lang);}
+
+  function renderScripts(){const list=[...state.scripts].sort((a,b)=>a.order-b.order||a.title.localeCompare(b.title));$('#scriptList').innerHTML=list.length?list.map(item=>`<button class="script-row" data-script-id="${esc(item.id)}"><strong>${esc(item.title)}</strong><span>›</span></button>`).join(''):'<div class="empty">스크립트 JSON을 가져오면 항목 목록이 표시됩니다.</div>';$$('#scriptList [data-script-id]').forEach(btn=>btn.onclick=()=>openScript(btn.dataset.scriptId));}
+  function openScript(id){const item=state.scripts.find(x=>x.id===id);if(!item)return;currentScriptId=id;$('#scriptDetailTitle').textContent=item.title;$('#scriptDetailText').textContent=item.content;setView('script-detail');logEvent('open_script');}
+
+  function activeNotes(){return state.notes.filter(n=>!n.deletedAt);}
+  function noteCategories(){return [...new Set(activeNotes().map(n=>n.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));}
+  function updateNoteCharCount(){$('#noteCharCount').textContent=`${($('#noteText')?.value||'').length.toLocaleString()}자`;}
+  function autoGrowNote(){const el=$('#noteText');el.style.height='auto';el.style.height=`${Math.max(el.scrollHeight,window.innerHeight-130)}px`;}
+  function renderNotes(){const categories=noteCategories();if(activeNoteCategory!=='전체'&&!categories.includes(activeNoteCategory))activeNoteCategory='전체';$('#noteCategoryChips').innerHTML=['전체',...categories].map(c=>`<button class="chip ${activeNoteCategory===c?'active':''}" data-note-category="${esc(c)}">${esc(c)}</button>`).join('');$$('#noteCategoryChips [data-note-category]').forEach(btn=>btn.onclick=()=>{activeNoteCategory=btn.dataset.noteCategory;renderNotes();});const q=$('#noteSearchInput').value.trim().toLowerCase();const all=[...activeNotes()].sort((a,b)=>dateValue(b.updatedAt)-dateValue(a.updatedAt));let list=activeNoteCategory==='전체'?all:all.filter(n=>n.category===activeNoteCategory);if(q)list=list.filter(n=>`${n.content} ${n.category}`.toLowerCase().includes(q));const draftCard=noteDraft?`<article class="card note-item note-draft-card" id="resumeNoteDraft"><div class="eyebrow">DRAFT</div><div class="note-preview">${esc(noteDraft.content||'(빈 초안)')}</div><div class="note-meta"><span>작성 중인 초안 · 이어쓰기</span></div></article>`:'';$('#noteList').innerHTML=draftCard+(list.length?list.map(n=>`<article class="card note-item" data-note-id="${esc(n.id)}"><div class="note-preview">${esc(n.content)}</div><div class="note-meta">${n.category?`<span class="note-category">${esc(n.category)}</span>`:''}<span>${fmt(n.updatedAt)} 수정</span></div></article>`).join(''):`<div class="empty">${activeNotes().length?'조건에 맞는 노트가 없습니다.':'아직 노트가 없습니다.<br>+ 새 노트로 첫 메모를 적어보세요.'}</div>`);$('#resumeNoteDraft')?.addEventListener('click',()=>openNote(noteDraft.noteId||null,true));$$('#noteList [data-note-id]').forEach(card=>card.onclick=()=>openNote(card.dataset.noteId));}
+  function openNote(id=null,resumeDraft=false){const matchingDraft=noteDraft&&((noteDraft.noteId||null)===(id||null));if(noteDraft&&!matchingDraft&&!resumeDraft){if(!confirm('다른 작성 중 초안이 있습니다. 이 노트를 열면 기존 초안을 버립니다. 계속할까요?'))return;clearNoteDraft();}editingNoteId=id;const n=id?state.notes.find(x=>x.id===id):null;const useDraft=resumeDraft&&matchingDraft;$('#noteCategoryOptions').innerHTML=noteCategories().map(c=>`<option value="${esc(c)}"></option>`).join('');$('#noteCategory').value=useDraft?noteDraft.category||'':n?.category||'';$('#noteText').value=useDraft?noteDraft.content||'':n?.content||'';$('#deleteNote').style.display=n?'inline-flex':'none';$('#noteEditor').classList.add('open');document.body.style.overflow='hidden';updateNoteCharCount();requestAnimationFrame(()=>{autoGrowNote();$('#noteText').focus();});}
+  function commitNoteAndClose(){const content=$('#noteText').value;const category=$('#noteCategory').value.trim();const trimmed=content.trim();const nowIso=new Date().toISOString();if(editingNoteId){const n=state.notes.find(x=>x.id===editingNoteId);if(n){const changed=n.content!==content||n.category!==category;if(changed){n.previousVersion={content:n.content,category:n.category,updatedAt:n.updatedAt};n.content=content;n.category=category;n.updatedAt=nowIso;if(!save())return;logEvent('edit_note');}}}else if(trimmed){state.notes.unshift(normalizeNote({id:crypto.randomUUID(),content,category,createdAt:nowIso,updatedAt:nowIso}));if(!save())return;logEvent('create_note');}clearNoteDraft();closeNoteEditor();renderNotes();}
+  function closeNoteEditor(){$('#noteEditor').classList.remove('open');document.body.style.overflow='';editingNoteId=null;}
+  async function copyCurrentNote(){try{await navigator.clipboard.writeText($('#noteText').value);toast('전체복사했습니다.');logEvent('copy_note');}catch{toast('복사하지 못했습니다.');}}
+  function deleteNote(){if(!editingNoteId||!confirm('이 노트를 삭제할까요?'))return;const n=state.notes.find(x=>x.id===editingNoteId);if(!n)return;n.deletedAt=new Date().toISOString();n.updatedAt=n.deletedAt;if(!save())return;clearNoteDraft();closeNoteEditor();renderNotes();toast('삭제했습니다.');logEvent('delete_note');}
+
+  function poolMeta(p){const parts=[];if(p.status)parts.push(p.status);if(p.priority)parts.push(p.priority);if(p.dueDate)parts.push(`기한 ${p.dueDate}`);return parts;}
+  function renderPool(){const active=state.pool.filter(p=>p.status!=='완료');const done=state.pool.filter(p=>p.status==='완료');const pick=active.length?active[Math.floor(Math.random()*active.length)]:null;$('#poolPickCard').innerHTML=pick?`<div class="eyebrow">RANDOM PICK</div><div style="font-size:19px;font-weight:750;line-height:1.4;margin-top:7px">${esc(pick.title)}</div>${pick.summary?`<div class="pool-summary">${esc(pick.summary)}</div>`:''}<div class="pool-meta">${poolMeta(pick).map(esc).join(' · ')||'조건 없음'}</div>${pick.parents?.length?`<div class="pool-rel">↳ ${pick.parents.map(x=>esc(x.title)).join(' · ')}</div>`:''}<div class="card-actions"><button class="ghost-btn" id="repickPool">다른 거</button><button class="primary-btn" data-edit-pool="${esc(pick.id)}">열기</button></div>`:'<div class="empty">미완료인 할 거리가 없습니다.</div>';const combined=[...active,...done];$('#poolList').innerHTML=combined.length?combined.map(p=>`<div class="card pool-item ${p.status==='완료'?'done':''}" data-pool-id="${esc(p.id)}"><button class="check toggle-pool" aria-label="${p.status==='완료'?'완료 해제':'완료 처리'}">${p.status==='완료'?'✓':''}</button><div class="pool-main"><div class="pool-title">${esc(p.title)}</div><div class="pool-meta">${poolMeta(p).map(esc).join(' · ')}</div>${p.summary?`<div class="pool-summary">${esc(p.summary)}</div>`:''}${p.parents?.length?`<div class="pool-rel">↳ ${p.parents.map(x=>esc(x.title)).join(' · ')}</div>`:''}</div><button class="ghost-btn edit-pool">열기</button></div>`).join(''):'<div class="empty">+ 추가로 후보를 쌓아두세요.</div>';$('#repickPool')?.addEventListener('click',()=>{renderPool();logEvent('repick_pool');});$('[data-edit-pool]')?.addEventListener('click',e=>openPool(e.currentTarget.dataset.editPool));$$('#poolList .toggle-pool').forEach(btn=>btn.onclick=e=>{const id=e.target.closest('[data-pool-id]').dataset.poolId;const p=state.pool.find(x=>x.id===id);p.status=p.status==='완료'?'미완료':'완료';save();renderPool();logEvent('toggle_pool');});$$('#poolList .edit-pool').forEach(btn=>btn.onclick=e=>openPool(e.target.closest('[data-pool-id]').dataset.poolId));}
+  function openPool(id=null){editingPoolId=id;const p=id?state.pool.find(x=>x.id===id):null;$('#poolModalTitle').textContent=p?'할 거리 수정':'할 거리 추가';$('#poolTitle').value=p?.title||'';$('#poolSummary').value=p?.summary||'';$('#poolStatus').value=p?.status||'미완료';$('#poolPriority').value=p?.priority||'';$('#poolDueDate').value=p?.dueDate||'';$('#poolAssignee').value=p?.assignee||'';const rel=[];if(p?.parents?.length)rel.push(`상위 항목: ${p.parents.map(x=>x.title).join(', ')}`);if(p?.children?.length)rel.push(`하위 항목: ${p.children.map(x=>x.title).join(', ')}`);$('#poolRelations').textContent=rel.join('\n');$('#poolRelations').style.display=rel.length?'block':'none';$('#deletePool').style.display=p?'block':'none';$('#poolModal').classList.add('open');setTimeout(()=>$('#poolTitle').focus(),50);}
+  function savePool(){const title=$('#poolTitle').value.trim();if(!title)return toast('작업명을 적어주세요.');if(editingPoolId){const p=state.pool.find(x=>x.id===editingPoolId);p.title=title;p.summary=$('#poolSummary').value;p.status=$('#poolStatus').value;p.priority=$('#poolPriority').value;p.dueDate=$('#poolDueDate').value.trim();p.assignee=$('#poolAssignee').value.trim();}else state.pool.unshift(normalizePool({id:crypto.randomUUID(),title,summary:$('#poolSummary').value,status:$('#poolStatus').value,priority:$('#poolPriority').value,dueDate:$('#poolDueDate').value.trim(),assignee:$('#poolAssignee').value.trim(),parents:[],children:[]}));if(!save())return;closeModal('poolModal');renderPool();toast('저장했습니다.');logEvent(editingPoolId?'edit_pool':'create_pool');}
+  function deletePool(){if(!confirm('이 항목을 삭제할까요?'))return;state.pool=state.pool.filter(x=>x.id!==editingPoolId);if(!save())return;closeModal('poolModal');renderPool();toast('삭제했습니다.');logEvent('delete_pool');}
+
   function closeModal(id){$('#'+id).classList.remove('open');}
-  function exportData(){
-    const payload={schemaVersion:6,kind:'app-backup',notes:state.notes,scripts:state.scripts,timeline:state.timeline,records:state.records,pool:state.pool};
-    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`archive-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),500);logEvent('export');
-  }
+  function downloadJson(payload,name){const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),500);}
+  function exportData(){downloadJson({schemaVersion:7,kind:'app-backup',notes:state.notes,scripts:state.scripts,timeline:state.timeline,microblogPosts:state.microblogPosts,records:state.records,pool:state.pool},`archive-backup-${new Date().toISOString().slice(0,10)}.json`);logEvent('export');}
+  function exportMicroblog(){downloadJson({schemaVersion:1,kind:'microblog-posts',exportedAt:new Date().toISOString(),posts:state.microblogPosts},`microblog-${new Date().toISOString().slice(0,10)}.json`);toast(`${state.microblogPosts.length}개 글을 내보냈습니다.`);logEvent('export_microblog');}
+  function clearMicroblog(){const count=state.microblogPosts.length;if(!count)return toast('비울 데이터가 없습니다.');if(!confirm(`마이크로블로그 글 ${count}개를 삭제합니다.\n내보낸 JSON 파일을 확인했나요?`))return;state.microblogPosts=[];clearMicroDraft();if(!save())return;feedOrder=buildFeedOrder();resetFeed(false);toast('마이크로블로그를 비웠습니다.');logEvent('clear_microblog');}
   async function importData(file){
-    try{
-      const parsed=JSON.parse(await file.text());
-      let importedCount=0;
-      if(parsed.kind==='script-quests' && Array.isArray(parsed.quests)) {
-        const quests=parsed.quests.map(normalizeScriptQuest).filter(x=>x.title && x.content);
-        if(!confirm(`스크립트를 가져온 ${quests.length}개 퀘스트로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`)) return;
-        state.scripts=quests;
-        importedCount=quests.length;
-      } else if(parsed.kind==='timeline-events' && Array.isArray(parsed.items)) {
-        const items=parsed.items.map(normalizeTimelineItem).filter(x=>x.year);
-        if(!confirm(`연표를 가져온 ${items.length}개 항목으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`)) return;
-        state.timeline=items;
-        importedCount=items.length;
-      } else if(parsed.kind==='todo-items' && Array.isArray(parsed.items)) {
-        const items=parsed.items.map(normalizePool).filter(x=>x.title.trim());
-        if(!confirm(`할 거리를 가져온 ${items.length}개 항목으로 교체할까요?\n보관함 기록은 그대로 유지됩니다.`)) return;
-        state.pool=items;
-        importedCount=items.length;
-      } else if(Array.isArray(parsed.records)) {
-        const records=parsed.records.map(normalizeRecord).filter(r=>r.content.trim());
-        if(parsed.kind==='archive-records' || !Array.isArray(parsed.pool)) {
-          if(!confirm(`보관함 기록을 가져온 ${records.length}개 기록으로 교체할까요?\n할 거리는 그대로 유지됩니다.`)) return;
-          state.records=records;
-          importedCount=records.length;
-        } else {
-          if(!confirm(`현재 로컬 데이터를 이 백업으로 교체할까요?`)) return;
-          state={notes:Array.isArray(parsed.notes)?parsed.notes.map(normalizeNote):state.notes, scripts:Array.isArray(parsed.scripts)?parsed.scripts.map(normalizeScriptQuest):state.scripts, timeline:Array.isArray(parsed.timeline)?parsed.timeline.map(normalizeTimelineItem):state.timeline, records, pool:parsed.pool.map(normalizePool)};
-          importedCount=records.length + state.pool.length + state.notes.length + state.scripts.length + state.timeline.length;
-        }
-      } else {
-        throw new Error('invalid');
-      }
-      if (!save()) return;
-      feedOrder=shuffle(state.records.map(r=>r.id)); feedCursor=0; archiveVisibleCount=ARCHIVE_BATCH;
-      resetFeed(false); renderArchive(); renderNotes(); renderPool(); renderTimeline(); renderScripts(); closeModal('settingsModal');
-      toast(`${importedCount}개를 가져왔습니다.`); logEvent('import');
-    }catch(e){console.error(e);toast('지원하는 JSON 파일이 아닙니다.');}
-    finally{$('#importFile').value='';}
+    try{const parsed=JSON.parse(await file.text());let importedCount=0;
+      if(parsed.kind==='script-items'&&Array.isArray(parsed.items)){const items=parsed.items.map(normalizeScriptItem).filter(x=>x.title&&x.content);if(!confirm(`스크립트를 가져온 ${items.length}개 항목으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;state.scripts=items;importedCount=items.length;}
+      else if(parsed.kind==='timeline-items'&&Array.isArray(parsed.items)){const items=parsed.items.map(normalizeTimelineItem).filter(x=>x.year);if(!confirm(`연표를 가져온 ${items.length}개 항목으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;state.timeline=items;importedCount=items.length;}
+      else if(parsed.kind==='microblog-posts'&&Array.isArray(parsed.posts)){const posts=parsed.posts.map(normalizeMicroPost).filter(x=>x.content.trim());if(!confirm(`마이크로블로그를 가져온 ${posts.length}개 글로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;state.microblogPosts=posts;importedCount=posts.length;}
+      else if(parsed.kind==='todo-items'&&Array.isArray(parsed.items)){const items=parsed.items.map(normalizePool).filter(x=>x.title.trim());if(!confirm(`할 거리를 가져온 ${items.length}개 항목으로 교체할까요?\n보관함 기록은 그대로 유지됩니다.`))return;state.pool=items;importedCount=items.length;}
+      else if(parsed.kind==='app-backup'&&Array.isArray(parsed.records)){if(!confirm('현재 로컬 데이터를 이 백업으로 교체할까요?'))return;state={notes:Array.isArray(parsed.notes)?parsed.notes.map(normalizeNote):state.notes,scripts:Array.isArray(parsed.scripts)?parsed.scripts.map(normalizeScriptItem):state.scripts,timeline:Array.isArray(parsed.timeline)?parsed.timeline.map(normalizeTimelineItem):state.timeline,microblogPosts:Array.isArray(parsed.microblogPosts)?parsed.microblogPosts.map(normalizeMicroPost):state.microblogPosts,records:parsed.records.map(normalizeRecord),pool:Array.isArray(parsed.pool)?parsed.pool.map(normalizePool):state.pool};importedCount=state.records.length+state.pool.length+state.notes.length+state.scripts.length+state.timeline.length+state.microblogPosts.length;}
+      else if(Array.isArray(parsed.records)){const records=parsed.records.map(normalizeRecord).filter(r=>r.content.trim());if(!confirm(`보관함 기록을 가져온 ${records.length}개 기록으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;state.records=records;importedCount=records.length;}
+      else throw new Error('invalid');
+      if(!save())return;feedOrder=buildFeedOrder();feedCursor=0;archiveVisibleCount=ARCHIVE_BATCH;resetFeed(false);renderArchive();renderNotes();renderPool();renderTimeline();renderScripts();closeModal('settingsModal');toast(`${importedCount}개를 가져왔습니다.`);logEvent('import');
+    }catch(e){console.error(e);toast('지원하는 JSON 파일이 아닙니다.');}finally{$('#importFile').value='';}
   }
 
   $$('.nav-btn').forEach(b=>b.onclick=()=>setView(b.dataset.view));
   $$('[data-open-view]').forEach(b=>b.onclick=()=>setView(b.dataset.openView));
-  $('#backToScripts').onclick=()=>setView('scripts');
-  $('#fab').onclick=()=>{ const active=$('.view.active')?.id; if(active==='view-notes') openNote(); else setView('write'); };
-  $$('[data-action="new-record"]').forEach(b=>b.onclick=()=>setView('write'));
+  $('#backTop').onclick=()=>{const parent=VIEW_PARENT[currentView];if(parent)setView(parent);};
+  $('#fab').onclick=()=>{if(currentView==='feed')openMicroComposer();else if(currentView==='notes')openNote();else if(currentView==='pool')openPool();};
   $$('[data-action="pick-pool"]').forEach(b=>b.onclick=()=>setView('pool'));
-  $('#saveWrite').onclick=createRecord;
-  $('#writeText').addEventListener('input', saveDraft);
-  $('#writeTags').addEventListener('input', saveDraft);
+  $('#publishMicro').onclick=publishMicro;
+  $('#microText').addEventListener('input',saveMicroDraft);
   $('#shuffleTop').onclick=reshuffleFeed;
   $('#searchInput').addEventListener('input',()=>{archiveVisibleCount=ARCHIVE_BATCH;renderArchive();});
   ['archiveYear','archiveMonth','archiveDay','archiveTag','archivePriority','archiveSort'].forEach(id=>$('#'+id).addEventListener('input',()=>{archiveVisibleCount=ARCHIVE_BATCH;renderArchive();}));
-  $('#saveRecordEdit').onclick=saveRecordEdit; $('#deleteRecord').onclick=deleteRecord;
-  $('#addNoteBtn').onclick=()=>openNote();
-  $('#noteSearchInput').addEventListener('input',renderNotes);
-  $('#noteText').addEventListener('input',()=>{saveNoteDraft();autoGrowNote();});
-  $('#noteCategory').addEventListener('input',saveNoteDraft);
-  $('#closeNoteEditor').onclick=commitNoteAndClose;
-  $('#copyNote').onclick=copyCurrentNote;
-  $('#deleteNote').onclick=deleteNote;
-  $('#addPoolBtn').onclick=()=>openPool(); $('#savePool').onclick=savePool; $('#deletePool').onclick=deletePool;
-  $('#settingsBtn').onclick=()=>$('#settingsModal').classList.add('open');
-  $('#exportBtn').onclick=exportData; $('#importBtn').onclick=()=>$('#importFile').click(); $('#importFile').onchange=e=>e.target.files[0]&&importData(e.target.files[0]);
-  $('#seedBtn').onclick=()=>{if(!confirm('현재 데이터에 샘플을 추가할까요?'))return;state.records.push(...starter.records.map(normalizeRecord));state.pool.push(...starter.pool.map(normalizePool));save();feedOrder=shuffle(state.records.map(r=>r.id));resetFeed(false);renderArchive();renderPool();toast('샘플을 추가했습니다.');};
-  $('#clearBtn').onclick=()=>{if(!confirm('이 기기에 저장된 모든 데이터를 지울까요?'))return;state={notes:[],scripts:[],timeline:[],records:[],pool:[]};clearNoteDraft();save();feedOrder=[];resetFeed(false);renderArchive();renderNotes();renderPool();renderTimeline();renderScripts();closeModal('settingsModal');toast('모두 지웠습니다.');};
-  $$('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
-  $$('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+  $('#saveRecordEdit').onclick=saveRecordEdit;$('#deleteRecord').onclick=deleteRecord;
+  $('#addNoteBtn').onclick=()=>openNote();$('#noteSearchInput').addEventListener('input',renderNotes);$('#noteText').addEventListener('input',()=>{saveNoteDraft();autoGrowNote();});$('#noteCategory').addEventListener('input',saveNoteDraft);$('#closeNoteEditor').onclick=commitNoteAndClose;$('#copyNote').onclick=copyCurrentNote;$('#deleteNote').onclick=deleteNote;
+  $('#addPoolBtn').onclick=()=>openPool();$('#savePool').onclick=savePool;$('#deletePool').onclick=deletePool;
+  $('#timelineKo').onclick=()=>setTimelineLang('ko');$('#timelineEn').onclick=()=>setTimelineLang('en');
+  $('#settingsBtn').onclick=()=>$('#settingsModal').classList.add('open');$('#exportBtn').onclick=exportData;$('#exportMicroBtn').onclick=exportMicroblog;$('#clearMicroBtn').onclick=clearMicroblog;$('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>e.target.files[0]&&importData(e.target.files[0]);
+  $('#seedBtn').onclick=()=>{if(!confirm('현재 데이터에 샘플을 추가할까요?'))return;state.records.push(...starter.records.map(normalizeRecord));state.pool.push(...starter.pool.map(normalizePool));save();feedOrder=buildFeedOrder();resetFeed(false);renderArchive();renderPool();toast('샘플을 추가했습니다.');};
+  $('#clearBtn').onclick=()=>{if(!confirm('이 기기에 저장된 모든 데이터를 지울까요?'))return;state={notes:[],scripts:[],timeline:[],microblogPosts:[],records:[],pool:[]};clearNoteDraft();clearMicroDraft();save();feedOrder=[];resetFeed(false);renderArchive();renderNotes();renderPool();renderTimeline();renderScripts();closeModal('settingsModal');toast('모두 지웠습니다.');};
+  $$('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));$$('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 
-  $('#writeText').value = draft.content ?? draft.text ?? '';
-  $('#writeTags').value = draft.tags || '';
-  resetFeed(false);
-  renderArchive();
-  renderNotes();
-  renderPool();
-  renderTimeline();
-  renderScripts();
-  logEvent('app_open');
+  resetFeed(false);renderArchive();renderNotes();renderPool();renderTimeline();renderScripts();updateChrome();logEvent('app_open');
 })();
 </script>
 </body>
