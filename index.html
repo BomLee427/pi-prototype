@@ -77,8 +77,12 @@
     }
     .quick-card strong { display: block; font-size: 13px; }
     .quick-card span { display: none; }
-    .feed-card { cursor: pointer; }
-    .feed-card:active { transform: scale(.995); }
+    .feed-card { position: relative; }
+    .feed-copy {
+      position:absolute; top:12px; right:12px; width:30px; height:30px; border:0; border-radius:10px;
+      background:rgba(255,255,255,.72); color:var(--muted); font-size:14px; display:grid; place-items:center;
+    }
+    .feed-card .card-meta { padding-right:34px; }
     .feed-text.collapsed {
       display: -webkit-box;
       -webkit-box-orient: vertical;
@@ -106,6 +110,18 @@
     .empty { padding: 34px 20px; color: var(--muted); text-align: center; border: 1px dashed rgba(24,24,24,.14); border-radius: 20px; line-height: 1.55; }
     .searchbar { position: sticky; top: calc(63px + env(safe-area-inset-top)); z-index: 10; padding: 8px 0 12px; background: linear-gradient(to bottom, var(--bg) 72%, transparent); }
     .searchbar input { background: rgba(255,255,255,.93); }
+    .filter-card { padding:14px; }
+    .filter-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .filter-grid .field { margin:0; }
+    .filter-grid .field.full { grid-column:1/-1; }
+    .filter-row { display:grid; grid-template-columns:1.2fr .9fr .9fr; gap:8px; }
+    .hub-list { display:grid; gap:10px; }
+    .hub-btn {
+      width:100%; border:1px solid var(--line); background:var(--card); border-radius:18px; padding:17px 16px;
+      text-align:left; color:var(--text); box-shadow:var(--shadow);
+    }
+    .hub-btn strong { display:block; font-size:16px; margin-bottom:5px; }
+    .hub-btn span { color:var(--muted); font-size:12px; line-height:1.5; }
     .pool-item { display: flex; align-items: flex-start; gap: 12px; }
     .pool-main { flex: 1; }
     .pool-title { font-size: 15px; line-height: 1.45; }
@@ -157,6 +173,30 @@
     .settings-grid button { text-align: left; width: 100%; padding: 14px; border-radius: 15px; border: 1px solid var(--line); background: rgba(255,255,255,.8); }
 
     .note-item { cursor: pointer; }
+    .note-search { margin-bottom:12px; }
+    .note-draft-card { border-style:dashed; }
+    .note-editor {
+      position:fixed; inset:0; z-index:150; background:var(--bg); display:none; overflow-y:auto;
+      overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+    }
+    .note-editor.open { display:block; }
+    .note-editor-head {
+      position:sticky; top:0; z-index:3; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px;
+      padding:calc(10px + env(safe-area-inset-top)) 12px 10px; background:rgba(245,243,238,.94);
+      backdrop-filter:blur(18px); border-bottom:1px solid var(--line);
+    }
+    .note-editor-head button { border:0; background:transparent; color:var(--text); padding:8px 6px; }
+    .note-editor-head .note-head-actions { display:flex; align-items:center; justify-content:flex-end; gap:6px; }
+    .note-counter { font-size:11px; color:var(--muted); white-space:nowrap; }
+    .note-editor-body { width:100%; min-height:100%; padding:0 0 max(34vh, 180px); }
+    .note-category-wrap { padding:12px 16px 4px; }
+    .note-category-wrap input { border:0; background:transparent; border-radius:0; padding:7px 0; box-shadow:none; }
+    #noteText {
+      display:block; width:100%; min-height:calc(100dvh - 120px); border:0; background:transparent; border-radius:0;
+      padding:12px 16px 0; resize:none; overflow:hidden; box-shadow:none; font-size:17px; line-height:1.65;
+    }
+    #noteText:focus { border:0; box-shadow:none; }
+    .note-editor-foot { padding:12px 16px 0; }
     .note-item:active { transform: scale(.995); }
     .note-preview {
       display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden;
@@ -233,6 +273,7 @@
         <h2>최근 수정</h2>
         <button id="addNoteBtn">+ 새 노트</button>
       </div>
+      <input class="note-search" id="noteSearchInput" placeholder="노트 검색" />
       <div class="chips" id="noteCategoryChips" style="margin-bottom:12px"></div>
       <div id="noteList"></div>
     </section>
@@ -246,9 +287,45 @@
       <div class="searchbar">
         <input id="searchInput" placeholder="본문이나 태그 검색" />
       </div>
+      <div class="card filter-card">
+        <div class="filter-grid">
+          <div class="field full">
+            <label>작성일</label>
+            <div class="filter-row">
+              <input id="archiveYear" type="number" inputmode="numeric" placeholder="연도" min="1900" max="2200" />
+              <select id="archiveMonth"><option value="">월 전체</option></select>
+              <select id="archiveDay"><option value="">일 전체</option></select>
+            </div>
+          </div>
+          <div class="field"><label>태그</label><select id="archiveTag"><option value="">전체</option></select></div>
+          <div class="field"><label>중요도</label><select id="archivePriority"><option value="">전체</option><option>A</option><option>B</option><option>C</option></select></div>
+          <div class="field full"><label>정렬</label><select id="archiveSort"><option value="desc">최신순</option><option value="asc">오래된순</option></select></div>
+        </div>
+      </div>
       <div class="statline" id="archiveStats"></div>
       <div style="height:10px"></div>
       <div id="archiveList"></div>
+    </section>
+
+    <section class="view" id="view-more">
+      <div class="hero">
+        <div class="eyebrow">MORE</div>
+        <h1>더보기</h1>
+        <div class="sub">자주 쓰지는 않지만 필요할 때 찾는 기능.</div>
+      </div>
+      <div class="hub-list">
+        <button class="hub-btn" data-open-view="archive"><strong>보관함</strong><span>감상 기록 검색 · 필터 · 관리</span></button>
+        <button class="hub-btn" data-open-view="library"><strong>자료실</strong><span>연표와 자료 아카이브 · 준비 중</span></button>
+      </div>
+    </section>
+
+    <section class="view" id="view-library">
+      <div class="hero">
+        <div class="eyebrow">LIBRARY</div>
+        <h1>자료실</h1>
+        <div class="sub">데이터를 연결하기 전까지 비워둡니다.</div>
+      </div>
+      <div class="empty">아직 연결된 자료가 없습니다.</div>
     </section>
   </main>
 
@@ -258,7 +335,7 @@
     <button class="nav-btn active" data-view="feed"><b>⌂</b>피드</button>
     <button class="nav-btn" data-view="notes"><b>✎</b>노트</button>
     <button class="nav-btn" data-view="pool"><b>◌</b>할 거리</button>
-    <button class="nav-btn" data-view="archive"><b>⌕</b>보관함</button>
+    <button class="nav-btn" data-view="more"><b>•••</b>더보기</button>
   </nav>
 </div>
 
@@ -275,15 +352,23 @@
   </div>
 </div>
 
-<div class="modal-backdrop" id="noteModal">
-  <div class="sheet">
-    <div class="handle"></div>
-    <div class="sheet-head"><h3 id="noteModalTitle">노트</h3><button data-close="noteModal">닫기</button></div>
-    <div class="field"><label>카테고리</label><input id="noteCategory" list="noteCategoryOptions" placeholder="예: 콘티, 설정, 장면" /><datalist id="noteCategoryOptions"></datalist></div>
-    <div class="field"><label>내용</label><textarea id="noteText" style="min-height:48dvh" placeholder="장면, 대사, 콘티, 아이디어를 적어두세요."></textarea></div>
-    <div class="row">
+<div class="note-editor" id="noteEditor">
+  <div class="note-editor-head">
+    <button id="closeNoteEditor" aria-label="닫기">닫기</button>
+    <div></div>
+    <div class="note-head-actions">
+      <span class="note-counter" id="noteCharCount">0자</span>
+      <button id="copyNote" aria-label="전체복사">전체복사</button>
+    </div>
+  </div>
+  <div class="note-editor-body">
+    <div class="note-category-wrap">
+      <input id="noteCategory" list="noteCategoryOptions" placeholder="카테고리" />
+      <datalist id="noteCategoryOptions"></datalist>
+    </div>
+    <textarea id="noteText" placeholder="장면, 대사, 콘티, 아이디어를 적어두세요."></textarea>
+    <div class="note-editor-foot">
       <button class="ghost-btn danger" id="deleteNote" style="display:none">삭제</button>
-      <button class="primary-btn" id="saveNote">저장</button>
     </div>
   </div>
 </div>
@@ -328,6 +413,7 @@
 (() => {
   const KEY = 'archive-prototype-v2';
   const DRAFT_KEY = 'archive-prototype-draft-v2';
+  const NOTE_DRAFT_KEY = 'archive-prototype-note-draft-v1';
   const EVENT_KEY = 'archive-prototype-events-v2';
   const FEED_BATCH = 20;
   const ARCHIVE_BATCH = 100;
@@ -353,6 +439,7 @@
   let editingRecordId = null;
   let editingNoteId = null;
   let activeNoteCategory = '전체';
+  let noteDraft = loadNoteDraft();
   let editingPoolId = null;
   let draft = loadDraft();
   let feedOrder = shuffle(state.records.map(r => r.id));
@@ -381,13 +468,22 @@
   }
   function normalizeNote(n = {}) {
     const createdAt = normalizeDate(n.createdAt);
-    return {
+    const out = {
       id: n.id || crypto.randomUUID(),
       content: String(n.content ?? n.text ?? ''),
       category: String(n.category || '').trim(),
       createdAt,
-      updatedAt: normalizeDate(n.updatedAt || createdAt)
+      updatedAt: normalizeDate(n.updatedAt || createdAt),
+      deletedAt: n.deletedAt ? normalizeDate(n.deletedAt) : ''
     };
+    if (n.previousVersion && typeof n.previousVersion === 'object') {
+      out.previousVersion = {
+        content: String(n.previousVersion.content ?? ''),
+        category: String(n.previousVersion.category || '').trim(),
+        updatedAt: normalizeDate(n.previousVersion.updatedAt || createdAt)
+      };
+    }
+    return out;
   }
   function normalizeRelationList(v) {
     if (!Array.isArray(v)) return [];
@@ -449,6 +545,25 @@
     draft = { content:'', tags:'' };
     localStorage.removeItem(DRAFT_KEY);
   }
+  function loadNoteDraft() {
+    try { return JSON.parse(localStorage.getItem(NOTE_DRAFT_KEY)) || null; }
+    catch { return null; }
+  }
+  function saveNoteDraft() {
+    if (!$('#noteEditor')?.classList.contains('open')) return;
+    noteDraft = {
+      noteId: editingNoteId || null,
+      content: $('#noteText').value,
+      category: $('#noteCategory').value,
+      updatedAt: new Date().toISOString()
+    };
+    localStorage.setItem(NOTE_DRAFT_KEY, JSON.stringify(noteDraft));
+    updateNoteCharCount();
+  }
+  function clearNoteDraft() {
+    noteDraft = null;
+    localStorage.removeItem(NOTE_DRAFT_KEY);
+  }
   function logEvent(name) {
     try {
       const events = JSON.parse(localStorage.getItem(EVENT_KEY) || '[]');
@@ -480,7 +595,8 @@
   }
   function setView(name) {
     $$('.view').forEach(v=>v.classList.toggle('active', v.id === `view-${name}`));
-    $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+    const navName = (name==='archive' || name==='library') ? 'more' : name;
+    $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===navName));
     if (name==='write') setTimeout(()=>$('#writeText').focus(), 40);
     if (name==='archive') { archiveVisibleCount = ARCHIVE_BATCH; renderArchive(); }
     if (name==='notes') renderNotes();
@@ -495,6 +611,7 @@
       : `${r.priority ? `<span class="pill">${esc(r.priority)}</span>` : ''}<span>${fmt(r.createdAt)}</span>`;
     const isLong = feed && String(r.content || '').length > FEED_COLLAPSE_THRESHOLD;
     return `<article class="card ${feed?'feed-card':''}" data-record-id="${esc(r.id)}">
+      ${feed ? '<button class="feed-copy" type="button" aria-label="전체복사">⧉</button>' : ''}
       <div class="card-meta">${meta}</div>
       <div class="card-text ${isLong ? 'feed-text collapsed' : ''}">${esc(r.content)}</div>
       ${isLong ? '<button class="feed-expand" type="button" aria-expanded="false">더 보기</button>' : ''}
@@ -505,9 +622,7 @@
     root.querySelectorAll('[data-record-id]').forEach(card=>{
       if (card.dataset.bound) return;
       card.dataset.bound = '1';
-      card.setAttribute('role','button');
-      card.setAttribute('tabindex','0');
-      const open=()=>openRecord(card.dataset.recordId);
+      const isFeed = card.classList.contains('feed-card');
       const expandBtn = card.querySelector('.feed-expand');
       if (expandBtn) {
         expandBtn.onclick = e => {
@@ -519,10 +634,25 @@
           expandBtn.setAttribute('aria-expanded', String(expanding));
         };
       }
-      card.onclick=e=>{ if (!e.target.closest('.feed-expand')) open(); };
-      card.onkeydown=e=>{
-        if ((e.key==='Enter' || e.key===' ') && !e.target.closest('.feed-expand')) { e.preventDefault(); open(); }
-      };
+      const copyBtn = card.querySelector('.feed-copy');
+      if (copyBtn) {
+        copyBtn.onclick = async e => {
+          e.stopPropagation();
+          const r = state.records.find(x=>x.id===card.dataset.recordId);
+          if (!r) return;
+          try { await navigator.clipboard.writeText(r.content); toast('복사했습니다.'); logEvent('copy_feed'); }
+          catch { toast('복사하지 못했습니다.'); }
+        };
+      }
+      if (!isFeed) {
+        card.setAttribute('role','button');
+        card.setAttribute('tabindex','0');
+        const open=()=>openRecord(card.dataset.recordId);
+        card.onclick=e=>{ if (!e.target.closest('.feed-expand')) open(); };
+        card.onkeydown=e=>{
+          if ((e.key==='Enter' || e.key===' ') && !e.target.closest('.feed-expand')) { e.preventDefault(); open(); }
+        };
+      }
     });
   }
   function resetFeed(reshuffle=true) {
@@ -589,13 +719,41 @@
     if (!save()) return;
     closeModal('recordModal'); resetFeed(false); renderArchive(); toast('삭제했습니다.'); logEvent('delete_record');
   }
+  function archiveFilterOptions() {
+    const tags=[...new Set(state.records.flatMap(r=>r.tags||[]))].sort((a,b)=>a.localeCompare(b,'ko'));
+    const tagSel=$('#archiveTag');
+    const currentTag=tagSel.value;
+    tagSel.innerHTML='<option value="">전체</option>'+tags.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+    if(tags.includes(currentTag)) tagSel.value=currentTag;
+    const monthSel=$('#archiveMonth');
+    if(monthSel.options.length===1) monthSel.insertAdjacentHTML('beforeend', Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}월</option>`).join(''));
+    const daySel=$('#archiveDay');
+    if(daySel.options.length===1) daySel.insertAdjacentHTML('beforeend', Array.from({length:31},(_,i)=>`<option value="${i+1}">${i+1}일</option>`).join(''));
+  }
   function archiveMatches() {
     const q=$('#searchInput').value.trim().toLowerCase();
-    let list=[...state.records].sort((a,b)=>dateValue(b.createdAt)-dateValue(a.createdAt));
+    const year=Number($('#archiveYear').value)||0;
+    const month=Number($('#archiveMonth').value)||0;
+    const day=Number($('#archiveDay').value)||0;
+    const tag=$('#archiveTag').value;
+    const priority=$('#archivePriority').value;
+    const dir=$('#archiveSort').value==='asc'?1:-1;
+    let list=[...state.records];
     if(q) list=list.filter(r=>`${r.content} ${(r.tags||[]).join(' ')} ${r.priority||''}`.toLowerCase().includes(q));
+    if(tag) list=list.filter(r=>(r.tags||[]).includes(tag));
+    if(priority) list=list.filter(r=>r.priority===priority);
+    if(year||month||day) list=list.filter(r=>{
+      const d=new Date(dateValue(r.createdAt));
+      if(year && d.getFullYear()!==year) return false;
+      if(month && d.getMonth()+1!==month) return false;
+      if(day && d.getDate()!==day) return false;
+      return true;
+    });
+    list.sort((a,b)=>dir*(dateValue(a.createdAt)-dateValue(b.createdAt)));
     return list;
   }
   function renderArchive() {
+    archiveFilterOptions();
     const list = archiveMatches();
     $('#archiveStats').innerHTML=`<span>전체 <strong>${state.records.length}</strong></span><span>현재 <strong>${list.length}</strong></span>`;
     const visible=list.slice(0,archiveVisibleCount);
@@ -605,60 +763,100 @@
     bindRecordCards($('#archiveList'));
     $('#archiveMore')?.addEventListener('click',()=>{archiveVisibleCount += ARCHIVE_BATCH; renderArchive();});
   }
+  function activeNotes() { return state.notes.filter(n=>!n.deletedAt); }
   function noteCategories() {
-    return [...new Set(state.notes.map(n=>n.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
+    return [...new Set(activeNotes().map(n=>n.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
+  }
+  function updateNoteCharCount() {
+    $('#noteCharCount').textContent = `${($('#noteText')?.value || '').length.toLocaleString()}자`;
+  }
+  function autoGrowNote() {
+    const el=$('#noteText');
+    el.style.height='auto';
+    el.style.height=`${Math.max(el.scrollHeight, window.innerHeight-130)}px`;
   }
   function renderNotes() {
     const categories=noteCategories();
     if(activeNoteCategory!=='전체' && !categories.includes(activeNoteCategory)) activeNoteCategory='전체';
     $('#noteCategoryChips').innerHTML=['전체', ...categories].map(c=>`<button class="chip ${activeNoteCategory===c?'active':''}" data-note-category="${esc(c)}">${esc(c)}</button>`).join('');
     $$('#noteCategoryChips [data-note-category]').forEach(btn=>btn.onclick=()=>{activeNoteCategory=btn.dataset.noteCategory;renderNotes();});
-    const all=[...state.notes].sort((a,b)=>dateValue(b.updatedAt)-dateValue(a.updatedAt));
-    const list=activeNoteCategory==='전체'?all:all.filter(n=>n.category===activeNoteCategory);
-    $('#noteList').innerHTML=list.length?list.map(n=>`<article class="card note-item" data-note-id="${esc(n.id)}">
+    const q=$('#noteSearchInput').value.trim().toLowerCase();
+    const all=[...activeNotes()].sort((a,b)=>dateValue(b.updatedAt)-dateValue(a.updatedAt));
+    let list=activeNoteCategory==='전체'?all:all.filter(n=>n.category===activeNoteCategory);
+    if(q) list=list.filter(n=>`${n.content} ${n.category}`.toLowerCase().includes(q));
+    const draftCard = noteDraft ? `<article class="card note-item note-draft-card" id="resumeNoteDraft">
+      <div class="eyebrow">DRAFT</div>
+      <div class="note-preview">${esc(noteDraft.content || '(빈 초안)')}</div>
+      <div class="note-meta"><span>작성 중인 초안 · 이어쓰기</span></div>
+    </article>` : '';
+    $('#noteList').innerHTML=draftCard + (list.length?list.map(n=>`<article class="card note-item" data-note-id="${esc(n.id)}">
       <div class="note-preview">${esc(n.content)}</div>
       <div class="note-meta">${n.category?`<span class="note-category">${esc(n.category)}</span>`:''}<span>${fmt(n.updatedAt)} 수정</span></div>
-    </article>`).join(''):`<div class="empty">${state.notes.length?'이 카테고리의 노트가 없습니다.':'아직 노트가 없습니다.<br>+ 새 노트로 첫 창작 메모를 적어보세요.'}</div>`;
-    $$('#noteList [data-note-id]').forEach(card=>{
-      card.onclick=()=>openNote(card.dataset.noteId);
-    });
+    </article>`).join(''):`<div class="empty">${activeNotes().length?'조건에 맞는 노트가 없습니다.':'아직 노트가 없습니다.<br>+ 새 노트로 첫 창작 메모를 적어보세요.'}</div>`);
+    $('#resumeNoteDraft')?.addEventListener('click',()=>openNote(noteDraft.noteId || null, true));
+    $$('#noteList [data-note-id]').forEach(card=>{ card.onclick=()=>openNote(card.dataset.noteId); });
   }
-  function openNote(id=null) {
+  function openNote(id=null, resumeDraft=false) {
+    const matchingDraft = noteDraft && ((noteDraft.noteId||null)===(id||null));
+    if(noteDraft && !matchingDraft && !resumeDraft){
+      if(!confirm('다른 작성 중 초안이 있습니다. 이 노트를 열면 기존 초안을 버립니다. 계속할까요?')) return;
+      clearNoteDraft();
+    }
     editingNoteId=id;
     const n=id?state.notes.find(x=>x.id===id):null;
-    $('#noteModalTitle').textContent=n?'노트 수정':'새 노트';
+    const useDraft = resumeDraft && matchingDraft;
     $('#noteCategoryOptions').innerHTML=noteCategories().map(c=>`<option value="${esc(c)}"></option>`).join('');
-    $('#noteCategory').value=n?.category||'';
-    $('#noteText').value=n?.content||'';
-    $('#deleteNote').style.display=n?'block':'none';
-    $('#noteModal').classList.add('open');
-    setTimeout(()=>$('#noteText').focus(),50);
+    $('#noteCategory').value=useDraft ? noteDraft.category||'' : n?.category||'';
+    $('#noteText').value=useDraft ? noteDraft.content||'' : n?.content||'';
+    $('#deleteNote').style.display=n?'inline-flex':'none';
+    $('#noteEditor').classList.add('open');
+    document.body.style.overflow='hidden';
+    updateNoteCharCount();
+    requestAnimationFrame(()=>{ autoGrowNote(); $('#noteText').focus(); });
   }
-  function saveNote() {
-    const content=$('#noteText').value.trim();
+  function commitNoteAndClose() {
+    const content=$('#noteText').value;
     const category=$('#noteCategory').value.trim();
-    if(!content) return toast('내용을 적어주세요.');
+    const trimmed=content.trim();
     const nowIso=new Date().toISOString();
     if(editingNoteId){
       const n=state.notes.find(x=>x.id===editingNoteId);
-      if(!n)return;
-      n.content=content;
-      n.category=category;
-      n.updatedAt=nowIso;
-    } else {
+      if(n){
+        const changed = n.content!==content || n.category!==category;
+        if(changed){
+          n.previousVersion={content:n.content, category:n.category, updatedAt:n.updatedAt};
+          n.content=content; n.category=category; n.updatedAt=nowIso;
+          if(!save()) return;
+          logEvent('edit_note');
+        }
+      }
+    } else if(trimmed){
       state.notes.unshift(normalizeNote({id:crypto.randomUUID(), content, category, createdAt:nowIso, updatedAt:nowIso}));
+      if(!save()) return;
+      logEvent('create_note');
     }
-    if(!save())return;
-    closeModal('noteModal');
+    clearNoteDraft();
+    closeNoteEditor();
     renderNotes();
-    toast('저장했습니다.');
-    logEvent(editingNoteId?'edit_note':'create_note');
+  }
+  function closeNoteEditor() {
+    $('#noteEditor').classList.remove('open');
+    document.body.style.overflow='';
+    editingNoteId=null;
+  }
+  async function copyCurrentNote() {
+    try { await navigator.clipboard.writeText($('#noteText').value); toast('전체복사했습니다.'); logEvent('copy_note'); }
+    catch { toast('복사하지 못했습니다.'); }
   }
   function deleteNote() {
-    if(!confirm('이 노트를 삭제할까요?'))return;
-    state.notes=state.notes.filter(x=>x.id!==editingNoteId);
+    if(!editingNoteId || !confirm('이 노트를 삭제할까요?'))return;
+    const n=state.notes.find(x=>x.id===editingNoteId);
+    if(!n)return;
+    n.deletedAt=new Date().toISOString();
+    n.updatedAt=n.deletedAt;
     if(!save())return;
-    closeModal('noteModal');
+    clearNoteDraft();
+    closeNoteEditor();
     renderNotes();
     toast('삭제했습니다.');
     logEvent('delete_note');
@@ -782,6 +980,7 @@
   }
 
   $$('.nav-btn').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+  $$('[data-open-view]').forEach(b=>b.onclick=()=>setView(b.dataset.openView));
   $('#fab').onclick=()=>{ const active=$('.view.active')?.id; if(active==='view-notes') openNote(); else setView('write'); };
   $$('[data-action="new-record"]').forEach(b=>b.onclick=()=>setView('write'));
   $$('[data-action="pick-pool"]').forEach(b=>b.onclick=()=>setView('pool'));
@@ -790,13 +989,20 @@
   $('#writeTags').addEventListener('input', saveDraft);
   $('#shuffleTop').onclick=reshuffleFeed;
   $('#searchInput').addEventListener('input',()=>{archiveVisibleCount=ARCHIVE_BATCH;renderArchive();});
+  ['archiveYear','archiveMonth','archiveDay','archiveTag','archivePriority','archiveSort'].forEach(id=>$('#'+id).addEventListener('input',()=>{archiveVisibleCount=ARCHIVE_BATCH;renderArchive();}));
   $('#saveRecordEdit').onclick=saveRecordEdit; $('#deleteRecord').onclick=deleteRecord;
-  $('#addNoteBtn').onclick=()=>openNote(); $('#saveNote').onclick=saveNote; $('#deleteNote').onclick=deleteNote;
+  $('#addNoteBtn').onclick=()=>openNote();
+  $('#noteSearchInput').addEventListener('input',renderNotes);
+  $('#noteText').addEventListener('input',()=>{saveNoteDraft();autoGrowNote();});
+  $('#noteCategory').addEventListener('input',saveNoteDraft);
+  $('#closeNoteEditor').onclick=commitNoteAndClose;
+  $('#copyNote').onclick=copyCurrentNote;
+  $('#deleteNote').onclick=deleteNote;
   $('#addPoolBtn').onclick=()=>openPool(); $('#savePool').onclick=savePool; $('#deletePool').onclick=deletePool;
   $('#settingsBtn').onclick=()=>$('#settingsModal').classList.add('open');
   $('#exportBtn').onclick=exportData; $('#importBtn').onclick=()=>$('#importFile').click(); $('#importFile').onchange=e=>e.target.files[0]&&importData(e.target.files[0]);
   $('#seedBtn').onclick=()=>{if(!confirm('현재 데이터에 샘플을 추가할까요?'))return;state.records.push(...starter.records.map(normalizeRecord));state.pool.push(...starter.pool.map(normalizePool));save();feedOrder=shuffle(state.records.map(r=>r.id));resetFeed(false);renderArchive();renderPool();toast('샘플을 추가했습니다.');};
-  $('#clearBtn').onclick=()=>{if(!confirm('이 기기에 저장된 모든 데이터를 지울까요?'))return;state={notes:[],records:[],pool:[]};save();feedOrder=[];resetFeed(false);renderArchive();renderNotes();renderPool();closeModal('settingsModal');toast('모두 지웠습니다.');};
+  $('#clearBtn').onclick=()=>{if(!confirm('이 기기에 저장된 모든 데이터를 지울까요?'))return;state={notes:[],records:[],pool:[]};clearNoteDraft();save();feedOrder=[];resetFeed(false);renderArchive();renderNotes();renderPool();closeModal('settingsModal');toast('모두 지웠습니다.');};
   $$('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
   $$('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 
