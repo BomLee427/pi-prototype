@@ -493,8 +493,10 @@
       <button id="clearMicroBtn" class="danger"><strong>마이크로블로그 비우기</strong><br><span class="small">내보낸 파일을 확인한 뒤 별도로 비울 수 있습니다.</span></button>
       <button id="seedBtn"><strong>샘플 데이터 다시 넣기</strong><br><span class="small">비어 있을 때 화면 느낌을 확인할 수 있습니다.</span></button>
       <button id="clearBtn" class="danger"><strong>모든 로컬 데이터 지우기</strong><br><span class="small">이 기기의 데이터만 삭제합니다.</span></button>
+      <button id="reloadLatestBtn"><strong>최신 버전 다시 불러오기</strong><br><span class="small">로컬 데이터는 유지하고 새 URL로 다시 요청합니다.</span></button>
     </div>
-    <input type="file" id="importFile" accept="application/json" style="display:none" />
+    <div class="small" id="appVersion" style="text-align:center;margin-top:14px;color:var(--muted)"></div>
+    <input type="file" id="importFile" accept="application/json,.json" style="display:none" />
   </div>
 </div>
 
@@ -507,6 +509,7 @@
   const MICRO_DRAFT_KEY = 'archive-prototype-microblog-draft-v1';
   const EVENT_KEY = 'archive-prototype-events-v2';
   const TIMELINE_LANG_KEY = 'archive-prototype-timeline-lang-v1';
+  const APP_VERSION = '2026.09.01.1';
   const FEED_BATCH = 20;
   const ARCHIVE_BATCH = 100;
   const FEED_COLLAPSE_THRESHOLD = 360;
@@ -757,17 +760,107 @@
   function exportData(){downloadJson({schemaVersion:7,kind:'app-backup',notes:state.notes,scripts:state.scripts,timeline:state.timeline,microblogPosts:state.microblogPosts,records:state.records,pool:state.pool},`archive-backup-${new Date().toISOString().slice(0,10)}.json`);logEvent('export');}
   function exportMicroblog(){downloadJson({schemaVersion:1,kind:'microblog-posts',exportedAt:new Date().toISOString(),posts:state.microblogPosts},`microblog-${new Date().toISOString().slice(0,10)}.json`);toast(`${state.microblogPosts.length}개 글을 내보냈습니다.`);logEvent('export_microblog');}
   function clearMicroblog(){const count=state.microblogPosts.length;if(!count)return toast('비울 데이터가 없습니다.');if(!confirm(`마이크로블로그 글 ${count}개를 삭제합니다.\n내보낸 JSON 파일을 확인했나요?`))return;state.microblogPosts=[];clearMicroDraft();if(!save())return;feedOrder=buildFeedOrder();resetFeed(false);toast('마이크로블로그를 비웠습니다.');logEvent('clear_microblog');}
+  function importErrorMessage(e) {
+    if(!e) return '알 수 없는 오류';
+    if(e instanceof Error && e.message) return e.message;
+    return String(e);
+  }
+  function readFileText(file) {
+    if(file && typeof file.text === 'function') return file.text();
+    return new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>resolve(String(reader.result||''));
+      reader.onerror=()=>reject(reader.error||new Error('파일을 읽지 못했습니다.'));
+      reader.readAsText(file,'utf-8');
+    });
+  }
+  function normalizeImportedPayload(parsed) {
+    if(!parsed || typeof parsed!=='object') throw new Error('JSON 최상위 구조가 올바르지 않습니다.');
+    if((parsed.kind==='script-items'||parsed.kind==='script-quests') && Array.isArray(parsed.items||parsed.quests)) {
+      const source=Array.isArray(parsed.items)?parsed.items:parsed.quests;
+      return {type:'scripts',items:source.map(normalizeScriptItem).filter(x=>x.title&&x.content)};
+    }
+    if((parsed.kind==='timeline-items'||parsed.kind==='timeline-events') && Array.isArray(parsed.items)) {
+      return {type:'timeline',items:parsed.items.map(normalizeTimelineItem).filter(x=>x.year)};
+    }
+    if(parsed.kind==='microblog-posts'&&Array.isArray(parsed.posts)) {
+      return {type:'microblog',items:parsed.posts.map(normalizeMicroPost).filter(x=>x.content.trim())};
+    }
+    if(parsed.kind==='todo-items'&&Array.isArray(parsed.items)) {
+      return {type:'pool',items:parsed.items.map(normalizePool).filter(x=>x.title.trim())};
+    }
+    if(parsed.kind==='app-backup'&&Array.isArray(parsed.records)) return {type:'backup',payload:parsed};
+    if(Array.isArray(parsed.records)) return {type:'records',items:parsed.records.map(normalizeRecord).filter(r=>r.content.trim())};
+    throw new Error(`지원하지 않는 형식입니다${parsed.kind?` (kind: ${parsed.kind})`:''}.`);
+  }
   async function importData(file){
-    try{const parsed=JSON.parse(await file.text());let importedCount=0;
-      if(parsed.kind==='script-items'&&Array.isArray(parsed.items)){const items=parsed.items.map(normalizeScriptItem).filter(x=>x.title&&x.content);if(!confirm(`스크립트를 가져온 ${items.length}개 항목으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;state.scripts=items;importedCount=items.length;}
-      else if(parsed.kind==='timeline-items'&&Array.isArray(parsed.items)){const items=parsed.items.map(normalizeTimelineItem).filter(x=>x.year);if(!confirm(`연표를 가져온 ${items.length}개 항목으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;state.timeline=items;importedCount=items.length;}
-      else if(parsed.kind==='microblog-posts'&&Array.isArray(parsed.posts)){const posts=parsed.posts.map(normalizeMicroPost).filter(x=>x.content.trim());if(!confirm(`마이크로블로그를 가져온 ${posts.length}개 글로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;state.microblogPosts=posts;importedCount=posts.length;}
-      else if(parsed.kind==='todo-items'&&Array.isArray(parsed.items)){const items=parsed.items.map(normalizePool).filter(x=>x.title.trim());if(!confirm(`할 거리를 가져온 ${items.length}개 항목으로 교체할까요?\n보관함 기록은 그대로 유지됩니다.`))return;state.pool=items;importedCount=items.length;}
-      else if(parsed.kind==='app-backup'&&Array.isArray(parsed.records)){if(!confirm('현재 로컬 데이터를 이 백업으로 교체할까요?'))return;state={notes:Array.isArray(parsed.notes)?parsed.notes.map(normalizeNote):state.notes,scripts:Array.isArray(parsed.scripts)?parsed.scripts.map(normalizeScriptItem):state.scripts,timeline:Array.isArray(parsed.timeline)?parsed.timeline.map(normalizeTimelineItem):state.timeline,microblogPosts:Array.isArray(parsed.microblogPosts)?parsed.microblogPosts.map(normalizeMicroPost):state.microblogPosts,records:parsed.records.map(normalizeRecord),pool:Array.isArray(parsed.pool)?parsed.pool.map(normalizePool):state.pool};importedCount=state.records.length+state.pool.length+state.notes.length+state.scripts.length+state.timeline.length+state.microblogPosts.length;}
-      else if(Array.isArray(parsed.records)){const records=parsed.records.map(normalizeRecord).filter(r=>r.content.trim());if(!confirm(`보관함 기록을 가져온 ${records.length}개 기록으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;state.records=records;importedCount=records.length;}
-      else throw new Error('invalid');
-      if(!save())return;feedOrder=buildFeedOrder();feedCursor=0;archiveVisibleCount=ARCHIVE_BATCH;resetFeed(false);renderArchive();renderNotes();renderPool();renderTimeline();renderScripts();closeModal('settingsModal');toast(`${importedCount}개를 가져왔습니다.`);logEvent('import');
-    }catch(e){console.error(e);toast('지원하는 JSON 파일이 아닙니다.');}finally{$('#importFile').value='';}
+    let parsed, normalized;
+    try {
+      const raw=await readFileText(file);
+      parsed=JSON.parse(raw.replace(/^\uFEFF/,''));
+    } catch(e) {
+      console.error('import: read/parse',e);
+      toast(`JSON 읽기 오류: ${importErrorMessage(e)}`);
+      $('#importFile').value='';
+      return;
+    }
+    try {
+      normalized=normalizeImportedPayload(parsed);
+    } catch(e) {
+      console.error('import: validate',e,parsed);
+      toast(`가져오기 형식 오류: ${importErrorMessage(e)}`);
+      $('#importFile').value='';
+      return;
+    }
+
+    let importedCount=0;
+    try {
+      if(normalized.type==='scripts'){
+        const items=normalized.items;
+        if(!confirm(`스크립트를 가져온 ${items.length}개 항목으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;
+        state.scripts=items; importedCount=items.length;
+      } else if(normalized.type==='timeline'){
+        const items=normalized.items;
+        if(!confirm(`연표를 가져온 ${items.length}개 항목으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;
+        state.timeline=items; importedCount=items.length;
+      } else if(normalized.type==='microblog'){
+        const posts=normalized.items;
+        if(!confirm(`마이크로블로그를 가져온 ${posts.length}개 글로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;
+        state.microblogPosts=posts; importedCount=posts.length;
+      } else if(normalized.type==='pool'){
+        const items=normalized.items;
+        if(!confirm(`할 거리를 가져온 ${items.length}개 항목으로 교체할까요?\n보관함 기록은 그대로 유지됩니다.`))return;
+        state.pool=items; importedCount=items.length;
+      } else if(normalized.type==='backup'){
+        const b=normalized.payload;
+        if(!confirm('현재 로컬 데이터를 이 백업으로 교체할까요?'))return;
+        state={notes:Array.isArray(b.notes)?b.notes.map(normalizeNote):state.notes,scripts:Array.isArray(b.scripts)?b.scripts.map(normalizeScriptItem):state.scripts,timeline:Array.isArray(b.timeline)?b.timeline.map(normalizeTimelineItem):state.timeline,microblogPosts:Array.isArray(b.microblogPosts)?b.microblogPosts.map(normalizeMicroPost):state.microblogPosts,records:b.records.map(normalizeRecord),pool:Array.isArray(b.pool)?b.pool.map(normalizePool):state.pool};
+        importedCount=state.records.length+state.pool.length+state.notes.length+state.scripts.length+state.timeline.length+state.microblogPosts.length;
+      } else if(normalized.type==='records'){
+        const records=normalized.items;
+        if(!confirm(`보관함 기록을 가져온 ${records.length}개 기록으로 교체할까요?\n다른 데이터는 그대로 유지됩니다.`))return;
+        state.records=records; importedCount=records.length;
+      }
+      if(!save()) throw new Error('localStorage 저장에 실패했습니다.');
+    } catch(e) {
+      console.error('import: store',e);
+      toast(`저장 오류: ${importErrorMessage(e)}`);
+      $('#importFile').value='';
+      return;
+    }
+
+    try {
+      feedOrder=buildFeedOrder(); feedCursor=0; archiveVisibleCount=ARCHIVE_BATCH;
+      resetFeed(false); renderArchive(); renderNotes(); renderPool(); renderTimeline(); renderScripts();
+      closeModal('settingsModal');
+      toast(`${importedCount}개를 가져왔습니다.`); logEvent('import');
+    } catch(e) {
+      console.error('import: render',e);
+      closeModal('settingsModal');
+      toast(`가져오기는 완료됐지만 화면 갱신 오류: ${importErrorMessage(e)}`);
+    } finally {
+      $('#importFile').value='';
+    }
   }
 
   $$('.nav-btn').forEach(b=>b.onclick=()=>setView(b.dataset.view));
@@ -784,7 +877,7 @@
   $('#addNoteBtn').onclick=()=>openNote();$('#noteSearchInput').addEventListener('input',renderNotes);$('#noteText').addEventListener('input',()=>{saveNoteDraft();autoGrowNote();});$('#noteCategory').addEventListener('input',saveNoteDraft);$('#closeNoteEditor').onclick=commitNoteAndClose;$('#copyNote').onclick=copyCurrentNote;$('#deleteNote').onclick=deleteNote;
   $('#addPoolBtn').onclick=()=>openPool();$('#savePool').onclick=savePool;$('#deletePool').onclick=deletePool;
   $('#timelineKo').onclick=()=>setTimelineLang('ko');$('#timelineEn').onclick=()=>setTimelineLang('en');
-  $('#settingsBtn').onclick=()=>$('#settingsModal').classList.add('open');$('#exportBtn').onclick=exportData;$('#exportMicroBtn').onclick=exportMicroblog;$('#clearMicroBtn').onclick=clearMicroblog;$('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>e.target.files[0]&&importData(e.target.files[0]);
+  $('#settingsBtn').onclick=()=>{ $('#appVersion').textContent=`Prototype ${APP_VERSION}`; $('#settingsModal').classList.add('open'); };$('#exportBtn').onclick=exportData;$('#exportMicroBtn').onclick=exportMicroblog;$('#clearMicroBtn').onclick=clearMicroblog;$('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>e.target.files[0]&&importData(e.target.files[0]);$('#reloadLatestBtn').onclick=()=>{const url=new URL(window.location.href);url.searchParams.set('_v',Date.now().toString());window.location.replace(url.toString());};
   $('#seedBtn').onclick=()=>{if(!confirm('현재 데이터에 샘플을 추가할까요?'))return;state.records.push(...starter.records.map(normalizeRecord));state.pool.push(...starter.pool.map(normalizePool));save();feedOrder=buildFeedOrder();resetFeed(false);renderArchive();renderPool();toast('샘플을 추가했습니다.');};
   $('#clearBtn').onclick=()=>{if(!confirm('이 기기에 저장된 모든 데이터를 지울까요?'))return;state={notes:[],scripts:[],timeline:[],microblogPosts:[],records:[],pool:[]};clearNoteDraft();clearMicroDraft();save();feedOrder=[];resetFeed(false);renderArchive();renderNotes();renderPool();renderTimeline();renderScripts();closeModal('settingsModal');toast('모두 지웠습니다.');};
   $$('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));$$('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
