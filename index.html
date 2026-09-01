@@ -74,13 +74,6 @@
     .ghost-btn { background: rgba(24,24,24,.06); color: var(--text); padding: 9px 12px; border-radius: 12px; font-size: 13px; }
     .primary-btn { background: var(--accent); color: #fff; padding: 12px 16px; border-radius: 14px; font-weight: 750; }
     .wide { width: 100%; }
-    .quick-strip { display: flex; gap: 8px; padding: 8px 0 12px; }
-    .quick-card {
-      flex: 1; min-height: 44px; text-align: center; background: rgba(255,255,255,.72); border: 1px solid var(--line); border-radius: 14px;
-      padding: 10px 12px; box-shadow: 0 4px 12px rgba(24,24,24,.035); color: var(--text);
-    }
-    .quick-card strong { display: block; font-size: 13px; }
-    .quick-card span { display: none; }
     .feed-card { position: relative; }
     .feed-copy {
       position:absolute; top:12px; right:12px; width:30px; height:30px; border:0; border-radius:10px;
@@ -97,6 +90,18 @@
       display: block; margin-top: 10px; padding: 4px 0; border: 0; background: transparent;
       color: var(--muted); font-size: 13px; font-weight: 700; text-align: left;
     }
+    .archive-card { cursor:pointer; }
+    .archive-text.collapsed {
+      display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:12; overflow:hidden;
+    }
+    .archive-expand {
+      display:inline-block; margin-top:10px; padding:4px 0; border:0; background:transparent; color:var(--muted);
+      font-size:13px; font-weight:700; text-align:left;
+    }
+    .archive-collapse-meta { display:flex; align-items:center; gap:8px; }
+    .archive-char-count { color:var(--muted); font-size:12px; }
+    .archive-char-count.hidden { display:none; }
+
     .microblog-card { position:relative; }
     .microblog-card .feed-copy { top:12px; right:12px; }
     .microblog-thread-content { display:grid; gap:14px; padding-right:34px; }
@@ -124,9 +129,20 @@
     .row { display: flex; gap: 10px; }
     .row > * { flex: 1; }
     .empty { padding: 34px 20px; color: var(--muted); text-align: center; border: 1px dashed rgba(24,24,24,.14); border-radius: 20px; line-height: 1.55; }
-    .searchbar { position: sticky; top: calc(63px + env(safe-area-inset-top)); z-index: 10; padding: 8px 0 12px; background: linear-gradient(to bottom, var(--bg) 72%, transparent); }
-    .searchbar input { background: rgba(255,255,255,.93); }
-    .filter-card { padding:14px; }
+    .archive-controls {
+      position: sticky; top: calc(58px + env(safe-area-inset-top)); z-index: 10; margin: 0 -16px 10px; padding: 8px 16px 10px;
+      background: rgba(248,247,243,.96); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(24,24,24,.055);
+    }
+    .archive-search-row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; }
+    .archive-search-row input { background: rgba(255,255,255,.96); }
+    .archive-filter-toggle {
+      align-self:stretch; border:1px solid var(--line); background:rgba(255,255,255,.82); color:var(--muted);
+      border-radius:14px; padding:0 13px; font-size:13px; font-weight:750;
+    }
+    .archive-filter-toggle[aria-expanded="true"] { color:var(--text); background:rgba(24,24,24,.07); }
+    .archive-filter-panel { display:none; padding-top:9px; }
+    .archive-filter-panel.open { display:block; }
+    .filter-card { padding:14px; margin-bottom:0; box-shadow:none; background:rgba(255,255,255,.72); }
     .filter-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
     .filter-grid .field { margin:0; }
     .filter-grid .field.full { grid-column:1/-1; }
@@ -177,6 +193,18 @@
     .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .sheet-head h3 { margin: 0; font-size: 18px; }
     .sheet-head button { border: 0; background: transparent; color: var(--muted); font-size: 14px; }
+    .fullscreen-editor { align-items:stretch; background:var(--bg); backdrop-filter:none; }
+    .fullscreen-editor .sheet {
+      width:min(720px,100%); height:100dvh; max-height:none; border-radius:0; box-shadow:none;
+      padding:0 16px calc(20px + env(safe-area-inset-bottom)); background:var(--bg);
+    }
+    .fullscreen-editor .handle { display:none; }
+    .fullscreen-editor .sheet-head {
+      position:sticky; top:0; z-index:3; margin:0 -16px 14px; padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
+      background:rgba(248,247,243,.95); backdrop-filter:blur(18px); border-bottom:1px solid var(--line);
+    }
+    #recordModal #editText { min-height:58dvh; resize:none; }
+
     .danger { color: #9b2c2c !important; }
     .toast {
       position: fixed; z-index: 200; left: 50%; transform: translateX(-50%) translateY(20px); bottom: calc(var(--nav-h) + 28px + env(safe-area-inset-bottom));
@@ -278,9 +306,6 @@
 
   <main>
     <section class="view active" id="view-feed">
-      <div class="quick-strip">
-        <button class="quick-card" data-action="pick-pool"><strong>◌ 뭐 하지?</strong></button>
-      </div>
       <div id="feedList"></div>
     </section>
 
@@ -334,22 +359,27 @@
         <h1>보관함</h1>
         <div class="sub">필요할 때만 검색하고, 평소에는 피드에서 다시 만납니다.</div>
       </div>
-      <div class="searchbar">
-        <input id="searchInput" placeholder="본문이나 태그 검색" />
-      </div>
-      <div class="card filter-card">
-        <div class="filter-grid">
-          <div class="field full">
-            <label>작성일</label>
-            <div class="filter-row">
-              <input id="archiveYear" type="number" inputmode="numeric" placeholder="연도" min="1900" max="2200" />
-              <select id="archiveMonth"><option value="">월 전체</option></select>
-              <select id="archiveDay"><option value="">일 전체</option></select>
+      <div class="archive-controls" id="archiveControls">
+        <div class="archive-search-row">
+          <input id="searchInput" placeholder="본문이나 태그 검색" />
+          <button class="archive-filter-toggle" id="archiveFilterToggle" type="button" aria-expanded="false">필터</button>
+        </div>
+        <div class="archive-filter-panel" id="archiveFilterPanel">
+          <div class="card filter-card">
+            <div class="filter-grid">
+              <div class="field full">
+                <label>작성일</label>
+                <div class="filter-row">
+                  <input id="archiveYear" type="number" inputmode="numeric" placeholder="연도" min="1900" max="2200" />
+                  <select id="archiveMonth"><option value="">월 전체</option></select>
+                  <select id="archiveDay"><option value="">일 전체</option></select>
+                </div>
+              </div>
+              <div class="field"><label>태그</label><select id="archiveTag"><option value="">전체</option></select></div>
+              <div class="field"><label>중요도</label><select id="archivePriority"><option value="">전체</option><option>A</option><option>B</option><option>C</option></select></div>
+              <div class="field full"><label>정렬</label><select id="archiveSort"><option value="desc">최신순</option><option value="asc">오래된순</option></select></div>
             </div>
           </div>
-          <div class="field"><label>태그</label><select id="archiveTag"><option value="">전체</option></select></div>
-          <div class="field"><label>중요도</label><select id="archivePriority"><option value="">전체</option><option>A</option><option>B</option><option>C</option></select></div>
-          <div class="field full"><label>정렬</label><select id="archiveSort"><option value="desc">최신순</option><option value="asc">오래된순</option></select></div>
         </div>
       </div>
       <div class="statline" id="archiveStats"></div>
@@ -428,7 +458,7 @@
   </nav>
 </div>
 
-<div class="modal-backdrop" id="recordModal">
+<div class="modal-backdrop fullscreen-editor" id="recordModal">
   <div class="sheet">
     <div class="handle"></div>
     <div class="sheet-head"><h3 id="recordModalTitle">기록</h3><button data-close="recordModal">닫기</button></div>
@@ -513,6 +543,7 @@
   const FEED_BATCH = 20;
   const ARCHIVE_BATCH = 100;
   const FEED_COLLAPSE_THRESHOLD = 360;
+  const ARCHIVE_COLLAPSE_THRESHOLD = 900;
   const MICROBLOG_COLLAPSE_THRESHOLD = 700;
   const DAY = 86400000;
   const now = Date.now();
@@ -658,8 +689,13 @@
 
   function recordCard(r,feed=false){
     const meta=feed?`<span>${fmt(r.createdAt)}</span>`:`${r.priority?`<span class="pill">${esc(r.priority)}</span>`:''}<span>${fmt(r.createdAt)}</span>`;
-    const isLong=feed&&String(r.content||'').length>FEED_COLLAPSE_THRESHOLD;
-    return `<article class="card ${feed?'feed-card':''}" data-record-id="${esc(r.id)}">${feed?'<button class="feed-copy" type="button" aria-label="전체복사">⧉</button>':''}<div class="card-meta">${meta}</div><div class="card-text ${isLong?'feed-text collapsed':''}">${esc(r.content)}</div>${isLong?'<button class="feed-expand" type="button" aria-expanded="false">더 보기</button>':''}${!feed&&r.tags?.length?`<div class="card-tags">${r.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div>`:''}</article>`;
+    const length=String(r.content||'').length;
+    const isLong=feed?length>FEED_COLLAPSE_THRESHOLD:length>ARCHIVE_COLLAPSE_THRESHOLD;
+    const textClass=feed?(isLong?'feed-text collapsed':''):(isLong?'archive-text collapsed':'');
+    const expand=feed
+      ?(isLong?'<button class="feed-expand" type="button" aria-expanded="false">더 보기</button>':'')
+      :(isLong?`<div class="archive-collapse-meta"><button class="archive-expand" type="button" aria-expanded="false">더 보기</button><span class="archive-char-count">${length.toLocaleString()}자</span></div>`:'');
+    return `<article class="card ${feed?'feed-card':'archive-card'}" data-record-id="${esc(r.id)}">${feed?'<button class="feed-copy" type="button" aria-label="전체복사">⧉</button>':''}<div class="card-meta">${meta}</div><div class="card-text ${textClass}">${esc(r.content)}</div>${expand}${!feed&&r.tags?.length?`<div class="card-tags">${r.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div>`:''}</article>`;
   }
   function microThreads(){
     const groups=new Map();
@@ -680,8 +716,9 @@
     root.querySelectorAll('[data-record-id]').forEach(card=>{
       if(card.dataset.bound)return;card.dataset.bound='1';const isFeed=card.classList.contains('feed-card');
       const expandBtn=card.querySelector('.feed-expand');if(expandBtn)expandBtn.onclick=e=>{e.stopPropagation();const text=card.querySelector('.feed-text');const expanding=text.classList.contains('collapsed');text.classList.toggle('collapsed',!expanding);expandBtn.textContent=expanding?'접기':'더 보기';expandBtn.setAttribute('aria-expanded',String(expanding));};
+      const archiveExpand=card.querySelector('.archive-expand');if(archiveExpand)archiveExpand.onclick=e=>{e.stopPropagation();const text=card.querySelector('.archive-text');const expanding=text.classList.contains('collapsed');text.classList.toggle('collapsed',!expanding);archiveExpand.textContent=expanding?'접기':'더 보기';archiveExpand.setAttribute('aria-expanded',String(expanding));card.querySelector('.archive-char-count')?.classList.toggle('hidden',expanding);};
       const copyBtn=card.querySelector('.feed-copy');if(copyBtn)copyBtn.onclick=async e=>{e.stopPropagation();const r=state.records.find(x=>x.id===card.dataset.recordId);if(!r)return;try{await navigator.clipboard.writeText(r.content);toast('복사했습니다.');logEvent('copy_feed');}catch{toast('복사하지 못했습니다.');}};
-      if(!isFeed){card.setAttribute('role','button');card.setAttribute('tabindex','0');const open=()=>openRecord(card.dataset.recordId);card.onclick=e=>{if(!e.target.closest('.feed-expand'))open();};card.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('.feed-expand')){e.preventDefault();open();}};}
+      if(!isFeed){card.setAttribute('role','button');card.setAttribute('tabindex','0');const open=()=>openRecord(card.dataset.recordId);card.onclick=e=>{if(!e.target.closest('.archive-expand'))open();};card.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('.archive-expand')){e.preventDefault();open();}};}
     });
     root.querySelectorAll('[data-thread-id]').forEach(card=>{
       if(card.dataset.bound)return;card.dataset.bound='1';
@@ -867,11 +904,11 @@
   $$('[data-open-view]').forEach(b=>b.onclick=()=>setView(b.dataset.openView));
   $('#backTop').onclick=()=>{const parent=VIEW_PARENT[currentView];if(parent)setView(parent);};
   $('#fab').onclick=()=>{if(currentView==='feed')openMicroComposer();else if(currentView==='notes')openNote();else if(currentView==='pool')openPool();};
-  $$('[data-action="pick-pool"]').forEach(b=>b.onclick=()=>setView('pool'));
   $('#publishMicro').onclick=publishMicro;
   $('#microText').addEventListener('input',saveMicroDraft);
   $('#shuffleTop').onclick=reshuffleFeed;
   $('#searchInput').addEventListener('input',()=>{archiveVisibleCount=ARCHIVE_BATCH;renderArchive();});
+  $('#archiveFilterToggle').addEventListener('click',()=>{const panel=$('#archiveFilterPanel');const opening=!panel.classList.contains('open');panel.classList.toggle('open',opening);$('#archiveFilterToggle').setAttribute('aria-expanded',String(opening));});
   ['archiveYear','archiveMonth','archiveDay','archiveTag','archivePriority','archiveSort'].forEach(id=>$('#'+id).addEventListener('input',()=>{archiveVisibleCount=ARCHIVE_BATCH;renderArchive();}));
   $('#saveRecordEdit').onclick=saveRecordEdit;$('#deleteRecord').onclick=deleteRecord;
   $('#addNoteBtn').onclick=()=>openNote();$('#noteSearchInput').addEventListener('input',renderNotes);$('#noteText').addEventListener('input',()=>{saveNoteDraft();autoGrowNote();});$('#noteCategory').addEventListener('input',saveNoteDraft);$('#closeNoteEditor').onclick=commitNoteAndClose;$('#copyNote').onclick=copyCurrentNote;$('#deleteNote').onclick=deleteNote;
